@@ -4,7 +4,7 @@
 
 ## Lightsail에서 실행
 
-x86_64 Lightsail Linux 인스턴스에 Docker Engine과 Compose를 준비합니다. 저장소의 `auction-lab/`에서 실행합니다.
+x86_64 Lightsail Linux 인스턴스에 Docker Engine과 Compose를 준비합니다. 저장소 루트에서 실행합니다.
 
 서버에만 보관하는 `.env`에 아래 변수를 설정합니다. 비밀번호와 Django 서명 키에는 서로 다른 값을 사용합니다.
 
@@ -49,6 +49,18 @@ AUCTION_BROWSER_URL=http://127.0.0.1:8000 python -m unittest discover -s browser
 ```
 
 브라우저 테스트는 테스트용 인스턴스에서 실행합니다. 확인 범위는 홈 검색과 지도·장바구니, 모바일 목록 복귀, VS 추천과 브리핑, 문의 문안의 클립보드 상태입니다.
+
+## GitHub Actions
+
+`main`으로 향하는 PR과 `main` 푸시에서 PostGIS 테스트와 브라우저 테스트를 실행합니다. Lightsail의 초기 설치와 시드 적재를 마친 뒤, 저장소 설정에 아래 Actions 변수를 등록합니다.
+
+- `LIGHTSAIL_HOST`는 SSH에 사용할 인스턴스의 IPv4 주소 또는 호스트 이름입니다.
+- `LIGHTSAIL_KNOWN_HOSTS`에는 서버에서 확인한 SSH 호스트 키를 `known_hosts` 형식으로 등록합니다.
+- `LIGHTSAIL_SITE_URL`은 사용자가 접속할 사이트의 기본 주소입니다.
+
+`production` 환경의 `LIGHTSAIL_SSH_PRIVATE_KEY` 시크릿에는 배포 전용 SSH 키를 등록합니다. 서버의 `ubuntu` 계정은 `/opt/auction-lab`에 체크아웃한 `main`과 Docker Compose를 사용할 수 있어야 합니다. `.env`는 서버에만 보관합니다.
+
+`LIGHTSAIL_HOST` 등록 후 테스트를 통과한 `main` 푸시가 배포를 시작합니다. Actions 화면의 **Run workflow**에서도 `main`을 선택해 재실행할 수 있습니다. 배포 직후 공개 주소에서 홈을 열고, 새 브라우저 세션에서 샘플 매물을 장바구니에 담았다 뺀 뒤 새로고침해 결과가 저장됐는지 확인합니다.
 
 ## 공간 데이터와 출처
 

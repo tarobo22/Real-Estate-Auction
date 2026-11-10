@@ -1,0 +1,101 @@
+name: 입찰랩 CI 및 Lightsail 배포
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: PostGIS 및 브라우저 테스트
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      AUCTION_DB_ADMIN_PASSWORD: ci-only-db-admin
+      AUCTION_DB_PASSWORD: ci-only-db-app
+      AUCTION_SECRET_KEY: ci-only-django-key-for-isolated-browser-checks
+      AUCTION_PORT: '8018'
+      AUCTION_BROWSER_URL: http://127.0.0.1:8018
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.12'
+      - name: Django 테스트
+        run: docker compose -p auction-tdd -f compose.test.yaml run --build --rm test
+      - name: 브라우저 테스트용 앱 실행
+        run: |
+          docker compose -p auction-browser build web
+          docker compose -p auction-browser run --rm web python manage.py migrate --noinput
+          docker compose -p auction-browser run --rm web python manage.py seed_auctions
+          docker compose -p auction-browser up -d --wait
+          curl --fail --silent --show-error --retry 5 --retry-connrefused --max-time 10 --output /dev/null "$AUCTION_BROWSER_URL/"
+      - name: 브라우저 테스트
+        run: |
+          python -m pip install -r requirements-browser.txt
+          python -m playwright install --with-deps chromium
+          python -m unittest discover -s browser_tests -v
+          python deploy/check-site.py
+      - name: 테스트 컨테이너 정리
+        if: always()
+        run: |
+          docker compose -p auction-browser down --volumes
+          docker compose -p auction-tdd -f compose.test.yaml down --volumes
+
+  deploy:
+    name: Lightsail 배포 및 공개 사이트 검증
+    needs: test
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && vars.LIGHTSAIL_HOST != ''
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment:
+      name: production
+      url: ${{ vars.LIGHTSAIL_SITE_URL }}
+    concurrency:
+      group: lightsail-production
+      cancel-in-progress: false
+    env:
+      AUCTION_BROWSER_URL: ${{ vars.LIGHTSAIL_SITE_URL }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.12'
+      - name: 배포 및 검증 준비
+        run: |
+          [[ "$AUCTION_BROWSER_URL" =~ ^https?://[a-zA-Z0-9][a-zA-Z0-9.-]*(:[0-9]+)?/?$ ]] || {
+            echo '::error::Set LIGHTSAIL_SITE_URL to the public site URL.'
+            exit 1
+          }
+          python -m pip install -r requirements-browser.txt
+          python -m playwright install --with-deps chromium
+      - name: Lightsail에 검증된 커밋 배포
+        env:
+          LIGHTSAIL_HOST: ${{ vars.LIGHTSAIL_HOST }}
+          LIGHTSAIL_KNOWN_HOSTS: ${{ vars.LIGHTSAIL_KNOWN_HOSTS }}
+          LIGHTSAIL_SSH_PRIVATE_KEY: ${{ secrets.LIGHTSAIL_SSH_PRIVATE_KEY }}
+        run: |
+          [[ "$LIGHTSAIL_HOST" =~ ^[a-zA-Z0-9][a-zA-Z0-9.-]*$ && "$GITHUB_SHA" =~ ^[a-f0-9]{40}$ ]] || exit 1
+          : "${LIGHTSAIL_KNOWN_HOSTS:?Set LIGHTSAIL_KNOWN_HOSTS}"
+          : "${LIGHTSAIL_SSH_PRIVATE_KEY:?Set the production SSH key}"
+          umask 077
+          ssh_dir=$(mktemp -d)
+          trap 'rm -f -- "$ssh_dir/key" "$ssh_dir/known_hosts"; rmdir -- "$ssh_dir"' EXIT
+          printf '%s\n' "$LIGHTSAIL_KNOWN_HOSTS" > "$ssh_dir/known_hosts"
+          printf '%s\n' "$LIGHTSAIL_SSH_PRIVATE_KEY" > "$ssh_dir/key"
+          ssh -o BatchMode=yes -o ConnectTimeout=15 -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$ssh_dir/known_hosts" \
+            -i "$ssh_dir/key" "ubuntu@$LIGHTSAIL_HOST" "bash -s -- '$GITHUB_SHA'" < deploy/lightsail.sh
+      - name: 공개 사이트 접속 및 장바구니 검증
+        run: |
+          curl --fail --silent --show-error --retry 5 --retry-connrefused --max-time 10 --output /dev/null "$AUCTION_BROWSER_URL/"
+          python deploy/check-site.py

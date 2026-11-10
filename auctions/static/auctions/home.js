@@ -1,4 +1,14 @@
 (() => {
+  const form = document.getElementById("home-search");
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const url = new URL(form.action);
+    for (const [key, value] of new FormData(form)) {
+      if (value.trim()) url.searchParams.set(key, value.trim());
+    }
+    location.assign(url);
+  });
+
   const rails = Array.from(document.querySelectorAll(".rail"));
   function move(rail, direction) {
     const card = rail.querySelector(".home-lot");

@@ -4,7 +4,7 @@
   <section class="hero">
     <p class="eyebrow">수도권 법원경매</p>
     <h1>어떤 경매 물건을 찾으세요?</h1>
-    <form class="filter-grid" method="get" action="{% url 'auctions:map' %}">
+    <form class="filter-grid" id="home-search" method="get" action="{% url 'auctions:map' %}">
       {% include 'auctions/_search_fields.html' %}
       <button class="button primary" type="submit">지도에서 보기</button>
     </form>
@@ -12,8 +12,10 @@
   <section class="section">
     <h2>용도별 매물</h2>
     <div class="categories">
-      {% for use in uses %}
-        <a href="{% url 'auctions:map' %}?use={{ use|urlencode }}&amp;kind={% if use == '아파트' %}upcoming{% else %}sold{% endif %}">{{ use }}</a>
+      {% for category in categories %}
+        <a href="{% url 'auctions:map' %}?use={{ category.use|urlencode }}&amp;kind={{ category.kind }}">
+          {{ category.use }} <small>{% if category.kind == 'upcoming' %}입찰 예정{% else %}낙찰 사례{% endif %} {{ category.count }}건</small>
+        </a>
       {% endfor %}
     </div>
   </section>

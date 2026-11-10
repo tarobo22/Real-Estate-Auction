@@ -1,24 +1,27 @@
 {% extends 'auctions/base.html' %}
+{% load static %}
 {% block title %}낙찰 · 입찰랩{% endblock %}
 {% block content %}
   <h1>낙찰</h1>
   <p class="muted">진행중은 서울 시간 기준 미래 기일입니다. 당일과 지난 기일은 결과가 확인되기 전까지 낙찰대기로 표시됩니다.</p>
   <nav class="status-tabs" aria-label="낙찰 상태">
-    {% for value, label in statuses %}
-      <a class="button" href="?status={{ value }}"{% if value == status %} aria-current="page"{% endif %}>{{ label }}</a>
+    {% for tab in status_tabs %}
+      <a class="button" href="{{ tab.url }}"{% if tab.value == status %} aria-current="page"{% endif %}>{{ tab.label }} {{ tab.count }}건</a>
     {% endfor %}
   </nav>
-  <details class="panel filter-panel"{% if request.GET|length > 1 %} open{% endif %}>
+  <details class="panel filter-panel" id="result-filters" open>
     <summary>가격·지역 필터</summary>
     <form class="filter-grid" action="{% url 'auctions:results' %}" method="get">
       <input type="hidden" name="status" value="{{ status }}">
+      {{ filter.status.errors }}
       {{ filter.non_field_errors }}
       {% for field in filter %}
-        {% if field.name != 'status' and field.name != 'min_rate' and field.name != 'max_rate' %}
+        {% if field.name != 'status' and field.name != 'min_rate' and field.name != 'max_rate' and field.name != 'rate_band' %}
           <div class="field">{{ field.label_tag }}{{ field }}{{ field.errors }}</div>
         {% endif %}
       {% endfor %}
       {% if status == 'sold' %}
+        <div class="field">{{ filter.rate_band.label_tag }}{{ filter.rate_band }}{{ filter.rate_band.errors }}</div>
         <div class="field">{{ filter.min_rate.label_tag }}{{ filter.min_rate }}{{ filter.min_rate.errors }}</div>
         <div class="field">{{ filter.max_rate.label_tag }}{{ filter.max_rate }}{{ filter.max_rate.errors }}</div>
       {% endif %}
@@ -44,3 +47,4 @@
     {% endfor %}
   </div>
 {% endblock %}
+{% block scripts %}<script defer src="{% static 'auctions/results.js' %}"></script>{% endblock %}

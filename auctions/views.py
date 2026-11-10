@@ -10,8 +10,8 @@ from django.views.decorators.http import require_safe
 
 from .comparison import current_comparison
 from .forms import BoundsForm, LotFilter
-from .models import AuctionLot, LotUse
-from .queries import COURT_SEARCH, MAP_LIMIT, SNAPSHOT_DATE, map_lots, page_lots
+from .models import AuctionLot
+from .queries import COURT_SEARCH, MAP_LIMIT, SNAPSHOT_DATE, home_categories, map_lots, page_lots
 
 
 def serialize_pin(lot):
@@ -32,13 +32,13 @@ def pins_for(lots):
 
 @require_safe
 def home(request):
-    upcoming = list(map_lots({"kind": "upcoming"})[:8])
-    sold = list(map_lots({"kind": "sold"})[:8])
+    upcoming = map_lots({"kind": "upcoming"})
+    sold = map_lots({"kind": "sold"})
     photos = [f"auctions/home-example-{index}.webp" for index in range(1, 5)]
     round_, single = current_comparison(request)
     return render(request, "auctions/home.html", {
-        "filter": LotFilter(), "uses": LotUse.values,
-        "upcoming": zip(upcoming, photos * 2), "sold": zip(sold, photos[2:] + photos * 2),
+        "filter": LotFilter(), "categories": home_categories(upcoming, sold),
+        "upcoming": zip(upcoming[:8], photos * 2), "sold": zip(sold[:8], photos[2:] + photos * 2),
         "snapshot": SNAPSHOT_DATE, "active": "home",
         "current_round": round_, "single_lot": single,
     })
@@ -46,13 +46,17 @@ def home(request):
 
 @require_safe
 def listing_map(request):
-    form = LotFilter(request.GET)
+    sold_view = request.GET.get("kind") == "sold"
+    sale_dates = AuctionLot.objects.filter(
+        bid__isnull=False, sale_date__isnull=False,
+    ).order_by("-sale_date").values_list("sale_date", flat=True).distinct() if sold_view else ()
+    form = LotFilter(request.GET, sale_dates=sale_dates)
     valid = form.is_valid()
     lots, truncated = page_lots(map_lots(form.cleaned_data)) if valid else ([], False)
     return render(request, "auctions/map.html", {
         "filter": form, "lots": lots, "pins": pins_for(lots), "truncated": truncated,
         "return_to": request.get_full_path(), "snapshot": SNAPSHOT_DATE, "active": "map",
-        "kakao_key": settings.KAKAO_MAP_JS_KEY,
+        "kakao_key": settings.KAKAO_MAP_JS_KEY, "sold_view": sold_view,
     }, status=200 if valid else 400)
 
 

@@ -3,7 +3,6 @@
   if (!app) return;
 
   const element = (id) => document.getElementById(id);
-  const form = element("map-filters");
   const svg = element("fallback-map");
   const kakaoElement = element("kakao-map");
   const boundaryLayer = element("boundary-layer");
@@ -12,6 +11,7 @@
   const list = element("map-list");
   const search = element("map-search");
   const all = element("map-all");
+  const clearRange = element("map-clear-range");
   const hint = element("map-hint");
   const status = element("map-status");
   const dialog = element("lot-dialog");
@@ -31,11 +31,19 @@
   let activeRequest = null;
   let detailRequest = null;
   let opener = null;
+  let openingMarker = "";
   let dragged = null;
   let scheduled = false;
   let truncated = status.textContent.includes("100건");
   const mobile = matchMedia("(max-width: 720px)");
   if (mobile.matches) list.open = false;
+  const summary = list.querySelector("summary");
+  let touchStart = null;
+  summary.addEventListener("touchstart", (event) => { touchStart = event.changedTouches[0].clientY; }, { passive: true });
+  summary.addEventListener("touchend", (event) => {
+    if (mobile.matches && touchStart !== null && touchStart - event.changedTouches[0].clientY > 25) list.open = true;
+    touchStart = null;
+  }, { passive: true });
 
   function fit(points) {
     if (!points.length) return { ...defaultBounds };
@@ -135,6 +143,7 @@
       const size = Math.max(35, label.length * 8 + 14);
       const node = svgNode("g", {
         class: "map-marker", role: "button", tabindex: 0, "aria-label": markerName(items),
+        "data-marker-key": items[0].id,
         transform: "translate(" + x + " " + y + ")",
       });
       node.append(svgNode("rect", { x: -size / 2, y: -13, width: size, height: 25, rx: 7 }));
@@ -165,6 +174,7 @@
       const button = document.createElement("button");
       button.type = "button";
       button.className = "map-pin";
+      button.dataset.markerKey = items[0].id;
       button.textContent = markerLabel(items);
       button.setAttribute("aria-label", markerName(items));
       button.addEventListener("click", () => markerAction(items, button));
@@ -259,7 +269,7 @@
     status.textContent = "이 지도에서 물건을 찾는 중입니다.";
     try {
       const url = new URL(app.dataset.api, location.href);
-      url.search = new URLSearchParams(new FormData(form));
+      url.search = location.search;
       for (const [key, value] of Object.entries(box)) url.searchParams.set(key, value);
       const response = await fetch(url, { signal: controller.signal });
       if (!response.ok) throw new Error("map search");
@@ -269,6 +279,7 @@
       truncated = data.truncated;
       rows.innerHTML = data.list_html;
       showRows();
+      clearRange.hidden = false;
       if (mobile.matches) list.open = true;
     } catch (error) {
       if (error.name !== "AbortError") status.textContent = "검색할 수 없습니다. 다시 시도해 주세요.";
@@ -289,6 +300,7 @@
     const controller = new AbortController();
     detailRequest = controller;
     opener = trigger;
+    openingMarker = trigger.dataset.markerKey || "";
     fragment.textContent = "상세를 불러오는 중입니다.";
     if (!dialog.open) dialog.showModal();
     try {
@@ -317,8 +329,12 @@
     detailRequest?.abort();
     detailRequest = null;
     if (opener?.isConnected) opener.focus({ preventScroll: true });
-    else svg.focus({ preventScroll: true });
+    else {
+      const current = openingMarker && app.querySelector('[data-marker-key="' + CSS.escape(openingMarker) + '"]');
+      (current || svg).focus({ preventScroll: true });
+    }
     opener = null;
+    openingMarker = "";
   });
 
   function enableKakao(key) {

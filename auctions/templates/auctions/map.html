@@ -6,8 +6,13 @@
   <form id="map-filters" class="filter-grid" action="{% url 'auctions:map' %}" method="get">
     {% include 'auctions/_search_fields.html' %}
     <div class="field"><label for="{{ filter.kind.id_for_label }}">상태</label>{{ filter.kind }}{{ filter.kind.errors }}</div>
-    <div class="field"><label for="{{ filter.days.id_for_label }}">기간 (일)</label>{{ filter.days }}{{ filter.days.errors }}</div>
+    {% if sold_view %}
+      <div class="field">{{ filter.sale_date.label_tag }}{{ filter.sale_date }}{{ filter.sale_date.errors }}</div>
+    {% else %}
+      <div class="field">{{ filter.days.label_tag }}{{ filter.days }}{{ filter.days.errors }}</div>
+    {% endif %}
     <button class="button primary" type="submit">조건 적용</button>
+    <a href="{% url 'auctions:map' %}">전체 조건 초기화</a>
   </form>
   <div class="map-layout" id="map-app" data-api="{% url 'auctions:map-api' %}"
        data-boundaries="{% static 'auctions/boundaries.json' %}" data-kakao-key="{{ kakao_key }}">
@@ -16,6 +21,7 @@
       <div class="map-list-content">
         <p id="map-status" role="status">{{ lots|length }}건{% if truncated %} · 100건까지만 표시{% endif %}</p>
         <button type="button" id="map-all" hidden>묶음 선택 해제</button>
+        <a href="{{ return_to }}" id="map-clear-range" hidden>지도 범위 해제</a>
         <div id="map-rows">{% include 'auctions/_map_rows.html' %}</div>
       </div>
     </details>

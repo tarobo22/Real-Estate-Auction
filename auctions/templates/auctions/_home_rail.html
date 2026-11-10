@@ -12,14 +12,16 @@
     {% for lot, photo in lots %}
       <a class="home-lot" href="{% url 'auctions:detail' lot.public_id %}">
         <div class="home-lot-media">
-          <img src="{% static photo %}" alt="" loading="lazy" decoding="async">
-          <span>예시 사진</span>
+          {% with image=lot.demo_photo|default:photo %}
+            <img src="{% static image %}" alt="" loading="lazy" decoding="async">
+          {% endwith %}
+          <span>{% if lot.is_demo %}AI 예시 사진{% else %}예시 사진{% endif %}</span>
         </div>
         <div class="home-lot-content">
           <p class="lot-meta"><span class="pill">{% if rail == 'upcoming' %}입찰 예정{% else %}낙찰 사례{% endif %}</span> {{ lot.region }} {{ lot.district }}</p>
           <h3>{{ lot.name }}</h3>
           <p>{{ lot.price_label }} <strong>{{ lot.display_price }}</strong></p>
-          <p>{{ lot.use }}{% if lot.area %} · 전용 {{ lot.area|floatformat:"-4" }}㎡{% endif %}{% if rail == 'upcoming' and lot.failed != None %} · 유찰 {{ lot.failed }}회{% endif %}</p>
+          <p>{{ lot.use }}{% if lot.area %} · {% if lot.is_demo and lot.use == '토지' %}토지 면적{% else %}전용{% endif %} {{ lot.area|floatformat:"-4" }}㎡{% endif %}{% if rail == 'upcoming' and lot.failed != None %} · 유찰 {{ lot.failed }}회{% endif %}</p>
           <p>{% if rail == 'upcoming' %}매각기일 {{ lot.auction_date|date:"n월 j일" }}{% else %}낙찰 {{ lot.sale_date|date:"n월 j일" }}{% endif %}</p>
         </div>
       </a>

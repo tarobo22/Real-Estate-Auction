@@ -19,6 +19,16 @@ class LotUse(models.TextChoices):
     LAND = "토지"
 
 
+DEMO_SOURCE_PREFIX = "demo:auction-lab:"
+DEMO_PHOTOS = {
+    LotUse.APARTMENT: "auctions/demo-apartment.webp",
+    LotUse.OFFICE: "auctions/demo-officetel.webp",
+    LotUse.MULTIFAMILY: "auctions/demo-villa.webp",
+    LotUse.COMMERCIAL: "auctions/demo-retail.webp",
+    LotUse.LAND: "auctions/demo-land.webp",
+}
+
+
 def won_label(amount):
     if amount is None:
         return "미수록"
@@ -110,7 +120,17 @@ class AuctionLot(models.Model):
         return self.minimum if self.bid is None else self.bid
 
     @property
+    def is_demo(self):
+        return self.source_key.startswith(DEMO_SOURCE_PREFIX)
+
+    @property
+    def demo_photo(self):
+        return DEMO_PHOTOS.get(self.use) if self.is_demo else None
+
+    @property
     def price_label(self):
+        if self.is_demo:
+            return "시연 최저입찰가" if self.bid is None else "시연 낙찰가"
         return "최저입찰가" if self.bid is None else "실제 낙찰가"
 
     @property

@@ -1,52 +1,60 @@
 {% load static %}
 <article class="lot-detail">
-  <p class="eyebrow">{{ lot.address }} · {{ lot.use }}</p>
-  <h2>{{ lot.name }}</h2>
-  {% if lot.is_demo %}
-    <p class="muted">시연용 가상 매물입니다. 위치·가격·기일은 예시입니다.</p>
-    {% with photo=lot.demo_photo %}
-      {% if photo %}
-        <div class="home-lot-media">
-          <img src="{% static photo %}" alt="{{ lot.use }} 예시" loading="lazy" decoding="async">
-          <span>AI 예시 사진</span>
-        </div>
-      {% endif %}
-    {% endwith %}
-  {% endif %}
-  <p>{{ lot.price_label }} <strong class="detail-price">{{ lot.display_price }}</strong></p>
-  {% include 'auctions/_cart_button.html' %}
-  <a href="{% url 'auctions:briefing' %}?lot={{ lot.public_id }}">이 매물로 브리핑</a>
-  <dl class="detail-grid">
-    <div><dt>{% if lot.is_demo %}시연 번호{% else %}사건번호{% endif %}</dt><dd>{{ lot.case_label|default:"미수록" }}</dd></div>
-    <div><dt>매각기일</dt><dd>{{ lot.auction_date|date:"Y.m.d"|default:"미수록" }}</dd></div>
-    {% if lot.sale_date %}<div><dt>낙찰일</dt><dd>{{ lot.sale_date|date:"Y.m.d" }}</dd></div>{% endif %}
-    <div><dt>감정가</dt><dd>{{ lot.display_appraisal }}</dd></div>
-    <div><dt>최저입찰가</dt><dd>{{ lot.display_minimum }}</dd></div>
-    {% if lot.area %}<div><dt>{% if lot.is_demo and lot.use == '토지' %}토지 면적{% else %}전용면적{% endif %}</dt><dd>{{ lot.area|floatformat:"-4" }}㎡</dd></div>{% endif %}
-    {% if lot.checked_on %}<div><dt>자료 확인일</dt><dd>{{ lot.checked_on|date:"Y.m.d" }}</dd></div>{% endif %}
-  </dl>
-  {% if lot.events.all %}
-    <h3>사건 이력</h3>
-    <ul>{% for event in lot.events.all %}<li>{{ event.occurred_on|date:"Y.m.d" }} · {{ event.get_kind_display }}{% if event.note %} · {{ event.note }}{% endif %}</li>{% endfor %}</ul>
-  {% endif %}
-  {% if not lot.is_demo %}
-    {% if lot.court_url %}
-      <a href="{{ lot.court_url }}" target="_blank" rel="noopener noreferrer">법원 원문 열기 ↗</a>
-    {% else %}
-      <a href="{{ court_search }}" target="_blank" rel="noopener noreferrer">법원경매정보 통합 검색 ↗</a>
-      <p class="muted">위 사건번호로 검색하세요.</p>
+  <section class="lot-section">
+    <div class="lot-detail-heading">
+      <div><span class="lot-kind">{{ lot.use }}</span><h2>{{ lot.name }}</h2></div>
+      {% include 'auctions/_cart_button.html' %}
+    </div>
+    <p class="muted">{{ lot.address }}{% if lot.area %} · {% if lot.use == '토지' %}토지면적{% elif lot.use == '상가' %}전유면적{% else %}전용면적{% endif %} {{ lot.area|floatformat:"-4" }}㎡{% endif %}{% if lot.floor != None %} · {{ lot.floor }}층{% endif %}</p>
+    {% if lot.is_demo %}<p class="lot-demo-note">시연용 가상 매물입니다. 위치·가격·기일은 예시입니다.</p>
+      {% with photo=lot.demo_photo %}{% if photo %}<figure class="lot-demo-photo"><img src="{% static photo %}" alt="{{ lot.use }} 예시" loading="lazy" decoding="async"><figcaption>AI 예시 사진</figcaption></figure>{% endif %}{% endwith %}
     {% endif %}
-    <h3>비교 매매 실거래</h3>
-    <ul>
-      {% for trade in lot.comparable_sales.all %}
-        <li>{{ trade.sale_date|date:"Y.m.d" }} · {{ trade.display_price }}{% if trade.floor != None %} · {{ trade.floor }}층{% endif %} · <a href="{{ trade.source_url }}" target="_blank" rel="noopener noreferrer">실거래 출처 ↗</a></li>
-      {% empty %}<li>비교 매매 실거래 미수록</li>{% endfor %}
-    </ul>
-    {% if lot.trade_note %}<p>{{ lot.trade_note }}</p>{% endif %}
+    <dl class="lot-price-summary">
+      <div><dt>{{ lot.price_label }}</dt><dd>{{ lot.display_price }}</dd></div>
+      <div><dt>감정가</dt><dd>{{ lot.display_appraisal }}</dd></div>
+      {% if lot.bid != None %}<div><dt>당시 최저입찰가</dt><dd>{{ lot.display_minimum }}</dd></div>{% endif %}
+    </dl>
+    <h3>{% if lot.is_demo %}시연 경매 정보{% else %}법원 경매 정보{% endif %}</h3>
+    <dl class="lot-case-data">
+      <dt>매각기일</dt><dd>{{ lot.auction_date|date:"Y.m.d"|default:"미수록" }}</dd>
+      {% if lot.sale_date %}<dt>낙찰일</dt><dd>{{ lot.sale_date|date:"Y.m.d" }}</dd>{% endif %}
+      <dt>{% if lot.is_demo %}시연 번호{% else %}사건번호{% endif %}</dt><dd>{{ lot.case_label|default:"미수록" }}</dd>
+      {% if lot.checked_on %}<dt>자료 확인일</dt><dd>{{ lot.checked_on|date:"Y.m.d" }}</dd>{% endif %}
+    </dl>
+    <div class="lot-detail-actions">
+      {% if not lot.is_demo %}{% if lot.court_url %}<a class="button" href="{{ lot.court_url }}" target="_blank" rel="noopener noreferrer">법원 원문 열기 ↗</a>
+      {% else %}<a class="button" href="{{ court_search }}" target="_blank" rel="noopener noreferrer">법원경매정보 통합 검색 ↗</a>{% endif %}{% endif %}
+      <a href="{% url 'auctions:briefing' %}?lot={{ lot.public_id }}">이 매물로 브리핑 ›</a>
+    </div>
+    {% if not lot.is_demo and not lot.court_url %}<p class="muted">위 사건번호로 검색하세요.</p>{% endif %}
+  </section>
+  {% if not lot.is_demo %}
+  <section class="lot-section" aria-labelledby="lot-comps-title">
+    <h3 id="lot-comps-title">비교 매매 실거래</h3>
+    {% with trades=lot.comparable_sales.all %}{% if trades %}
+      <div class="lot-trades-scroll">
+        <table aria-labelledby="lot-comps-title">
+          <thead><tr><th scope="col">계약일</th><th scope="col">층</th><th scope="col">매매가</th><th scope="col">출처</th></tr></thead>
+          <tbody>{% for trade in trades %}<tr>
+            <td>{{ trade.sale_date|date:"Y.m.d" }}</td><td>{% if trade.floor != None %}{{ trade.floor }}층{% else %}미수록{% endif %}</td><td>{{ trade.display_price }}</td><td><a href="{{ trade.source_url }}" target="_blank" rel="noopener noreferrer" aria-label="실거래 출처">보기 ↗</a></td>
+          </tr>{% endfor %}</tbody>
+        </table>
+      </div>
+    {% else %}<p class="muted">비교 매매 실거래 미수록</p>{% endif %}{% endwith %}
+    {% if lot.trade_note %}<p class="muted">{{ lot.trade_note }}</p>{% endif %}
+  </section>
+  {% endif %}
+  {% if not lot.is_demo or lot.events.all %}<section class="lot-section">
+    {% if not lot.is_demo %}
     <h3>입찰 조건과 권리 확인</h3>
     <p>{{ lot.note|default:"기일과 조건은 법원 공고에서 확인하세요." }}</p>
-    {% for url in lot.reference_urls %}
+    {% endif %}
+    {% if lot.events.all %}<h3>사건 이력</h3>
+      <ul>{% for event in lot.events.all %}<li>{{ event.occurred_on|date:"Y.m.d" }} · {{ event.get_kind_display }}{% if event.note %} · {{ event.note }}{% endif %}</li>{% endfor %}</ul>
+    {% endif %}
+    {% if not lot.is_demo %}{% for url in lot.reference_urls %}
       <a href="{{ url }}" target="_blank" rel="noopener noreferrer">참고 출처 {{ forloop.counter }} ↗</a>{% if not forloop.last %} · {% endif %}
-    {% endfor %}
+    {% endfor %}{% endif %}
+  </section>
   {% endif %}
 </article>

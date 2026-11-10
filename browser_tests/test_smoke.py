@@ -29,6 +29,49 @@ class AuctionBrowserTests(unittest.TestCase):
         self.addCleanup(lambda: self.assertEqual(errors, []))
         return page
 
+    def test_shared_navigation_uses_compact_mobile_icon_tabs(self):
+        page = self.page(viewport={"width": 390, "height": 844}, is_mobile=True, has_touch=True)
+        page.goto(BASE + "/")
+        nav = page.get_by_role("navigation", name="주 메뉴")
+        expect(nav.locator("a svg")).to_have_count(5)
+        expect(nav.get_by_role("link", name="홈", exact=True)).to_have_attribute("aria-current", "page")
+        self.assertLess(abs(nav.bounding_box()["y"] + nav.bounding_box()["height"] - 844), 2)
+        expect(page.locator("#cart-opener svg")).to_be_visible()
+        nav.get_by_role("link", name="낙찰").click()
+        expect(nav.get_by_role("link", name="낙찰")).to_have_attribute("aria-current", "page")
+
+    def test_result_status_updates_without_reload_and_restores_history(self):
+        page = self.page(viewport={"width": 390, "height": 844}, reduced_motion="no-preference")
+        page.goto(BASE + "/results/")
+        stages = page.locator("[data-result-status-strip]")
+        expect(stages.locator("a")).to_have_count(3)
+        active = stages.locator('[aria-current="page"]')
+        expect(active).to_have_attribute("data-status", "upcoming")
+        self.assertEqual(active.evaluate("element => getComputedStyle(element).fontWeight"), "400")
+        self.assertEqual(stages.evaluate("element => getComputedStyle(element, '::before').transitionDuration"), "0.32s")
+        page.evaluate("window.resultsNavigationSentinel = true")
+        stages.get_by_role("link", name=re.compile("완료")).click()
+        expect(page.locator("#results-content")).to_have_attribute("data-results-state", "sold")
+        expect(active).to_have_attribute("data-status", "sold")
+        expect(page).to_have_url(re.compile(r"[?&]status=sold"))
+        self.assertTrue(page.evaluate("window.resultsNavigationSentinel"))
+        page.evaluate("history.back()")
+        expect(page.locator("#results-content")).to_have_attribute("data-results-state", "upcoming")
+        expect(active).to_have_attribute("data-status", "upcoming")
+        self.assertTrue(page.evaluate("window.resultsNavigationSentinel"))
+
+    def test_detail_prioritizes_prices_and_comparable_trade_table(self):
+        page = self.page(viewport={"width": 390, "height": 844}, is_mobile=True, has_touch=True)
+        page.goto(BASE + "/lots/ri1/")
+        detail = page.locator(".lot-detail")
+        expect(detail.get_by_role("heading", name="쌍용아파트")).to_be_visible()
+        expect(detail.locator(".lot-price-summary")).to_contain_text("최저입찰가")
+        expect(detail.locator(".lot-price-summary")).to_contain_text("감정가")
+        trades = detail.get_by_role("table", name="비교 매매 실거래")
+        expect(trades.get_by_role("columnheader", name="계약일")).to_be_visible()
+        expect(trades.get_by_role("row")).to_have_count(2)
+        self.assertEqual(page.evaluate("document.documentElement.scrollWidth"), 390)
+
     def test_desktop_search_bounds_details_and_cart(self):
         page = self.page(viewport={"width": 1440, "height": 900})
         page.goto(BASE + "/")

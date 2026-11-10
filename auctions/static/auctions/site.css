@@ -59,10 +59,9 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .footer-row { padding-block: .8rem; color: var(--muted); font-size: .9rem; }
 .eyebrow { color: var(--green); font-weight: 720; }
 .muted { color: var(--muted); font-size: .94rem; }
-.hero, .panel { border: 1px solid var(--line); border-radius: 16px; background: white; }
-.hero { padding: clamp(18px, 5vw, 54px); background: linear-gradient(110deg, white, var(--tint)); }
+.panel { border: 1px solid var(--line); border-radius: 16px; background: white; }
 .section { margin-block-start: 34px; }
-.section-heading, .rail-actions {
+.section-heading {
   display: flex;
   gap: .5rem;
   align-items: center;
@@ -71,32 +70,12 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 }
 .section-heading { margin-block-end: .6rem; }
 .section-heading h2 { margin-block-end: 0; }
-.categories { display: grid; grid-template-columns: repeat(auto-fit, minmax(112px, 1fr)); gap: .55rem; }
-.categories a { background: white; border: 1px solid var(--line); border-radius: 10px; padding: .85rem; text-decoration: none; text-align: center; font-weight: 700; }
-.categories small { display: block; color: var(--muted); font-weight: 550; }
 .filter-grid { display: flex; flex-wrap: wrap; gap: .55rem; margin-block: .8rem; align-items: end; }
 .filter-grid label { display: block; font-weight: 640; font-size: .9rem; margin-block-end: .2rem; }
 .filter-grid .search-query { flex: 2 1 230px; }
 .filter-grid .field { flex: 1 1 110px; }
 .filter-grid input, .filter-grid select { width: 100%; min-width: 0; }
 .errorlist { color: #922727; margin: .2rem 0; padding-inline-start: 1.2rem; }
-.rail { display: flex; gap: 1rem; overflow-x: auto; padding: 4px 4px 9px; scroll-snap-type: x mandatory; }
-.home-lot {
-  flex: 0 0 clamp(250px, 34%, 380px);
-  scroll-snap-align: start;
-  border: 1px solid var(--line);
-  border-radius: 13px;
-  background: white;
-  color: var(--ink);
-  text-decoration: none;
-  overflow: hidden;
-}
-.home-lot-media { position: relative; aspect-ratio: 2.1; }
-.home-lot-media img { width: 100%; height: 100%; object-fit: cover; }
-.home-lot-media span { position: absolute; inset: auto .55rem .55rem auto; background: #1a3426; color: white; padding: .18rem .4rem; border-radius: 5px; font-size: .82rem; }
-.home-lot-content { padding: .8rem; }
-.home-lot-content p { margin-block-end: .35rem; color: var(--muted); }
-.home-lot-content strong { font-size: 1.2rem; color: var(--ink); }
 .pill { display: inline-block; padding: .12rem .45rem; border-radius: 6px; background: var(--tint); color: var(--green); font-size: .86rem; font-weight: 700; }
 .map-layout { display: grid; grid-template-columns: minmax(245px, 1fr) minmax(0, 2fr); gap: 12px; margin-block-start: 1rem; }
 .map-list, .map-panel { min-width: 0; padding: .8rem; }
@@ -153,7 +132,6 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .vs-card-actions { display: flex; flex-wrap: wrap; gap: .35rem .8rem; margin-block-start: .45rem; font-size: .9rem; }
 .winner-rail { display: flex; overflow-x: auto; gap: .55rem; padding: .3rem; scroll-snap-type: x mandatory; }
 .winner-card { display: grid; gap: .3rem; flex: 0 0 200px; padding: .75rem; scroll-snap-align: start; }
-.briefing-banner { padding: 1rem; background: var(--tint); }
 .briefing-layout { display: grid; grid-template-columns: minmax(170px, 1fr) minmax(0, 3fr); gap: .7rem; }
 .briefing-history, .briefing-thread { padding: 1rem; }
 .briefing-history summary { font-weight: 700; cursor: pointer; }
@@ -177,7 +155,6 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   .map-layout { grid-template-columns: minmax(0, 1fr); }
   .map-panel { grid-row: 1; }
   .map-list-content { max-height: 45vh; }
-  .home-lot { flex-basis: min(84%, 360px); }
   .cart-dialog { inset: auto 0 0; width: 100%; height: auto; max-height: 78dvh; }
   .briefing-layout { grid-template-columns: minmax(0, 1fr); }
   .recommendation-dialog { inset: auto 0 0; width: 100%; margin: 0; max-height: 82dvh; }

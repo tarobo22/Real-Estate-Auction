@@ -1,19 +1,33 @@
-<article class="panel vs-card">
+{% load static %}
+<article class="vs-card">
+  <div class="vs-visual">
+    {% if lot.demo_photo %}
+      <img src="{% static lot.demo_photo %}" alt="" decoding="async">
+      <span class="vs-photo-label">AI 예시 사진</span>
+    {% elif lot.use == '아파트' %}
+      <img src="{% if slot == 'A' %}{% static 'auctions/home-example-1.webp' %}{% else %}{% static 'auctions/home-example-3.webp' %}{% endif %}" alt="" decoding="async">
+      <span class="vs-photo-label">예시 사진</span>
+    {% elif lot.use == '오피스텔' or lot.use == '연립·다세대' %}
+      <img src="{% if lot.use == '오피스텔' %}{% static 'auctions/home-example-4.webp' %}{% else %}{% static 'auctions/home-example-3.webp' %}{% endif %}" alt="" decoding="async">
+      <span class="vs-photo-label">예시 사진</span>
+    {% else %}
+      <svg class="vs-placeholder" viewBox="0 0 48 48" aria-hidden="true"><path d="M7 41h34M12 41V15l16-5v31m0-20h9v20M17 19h5m-5 7h5m-5 7h5m10-6h2m-2 6h2"/></svg>
+    {% endif %}
+    <span class="vs-letter" aria-hidden="true">{{ slot }}</span>
+    <div class="vs-copy">
+      <h3>{{ lot.name }}</h3>
+      <p class="vs-price" id="vs-price-{{ slot }}"><span>{{ lot.price_label }}</span><strong>{{ lot.display_price }}</strong></p>
+      {% if lot.advantage %}<p class="vs-advantage" title="{{ lot.advantage }}">{{ lot.advantage }}</p>{% endif %}
+    </div>
+  </div>
   <form action="{% url 'auctions:vs' %}" method="post" data-vs-choose>
     {% csrf_token %}
     <input type="hidden" name="action" value="choose">
     <input type="hidden" name="token" value="{{ current_round.token }}">
-    <button type="submit" name="winner" value="{{ lot.public_id }}" data-vs-slot="{{ slot }}" class="vs-pick">
-      <span class="pill">{{ slot }} · {% if lot.bid != None %}낙찰 사례{% else %}입찰 예정{% endif %}</span>
-      <strong>{{ lot.name }}</strong>
-      <span>{{ lot.address }} · {{ lot.use }}</span>
-      <span>{{ lot.price_label }} <b>{{ lot.display_price }}</b></span>
-      {% if lot.advantage %}<span>{{ lot.advantage }}</span>{% endif %}
-      <span class="vs-pick-label">{{ slot }} 선택하기</span>
-    </button>
+    <button type="submit" name="winner" value="{{ lot.public_id }}" data-vs-slot="{{ slot }}" class="vs-pick" aria-label="매물 {{ slot }} {{ lot.name }} 선택하기" aria-describedby="vs-price-{{ slot }}"></button>
   </form>
   <div class="vs-card-actions">
-    <a href="{% url 'auctions:detail' lot.public_id %}" data-vs-detail>상세 보기</a>
-    <a href="{% url 'auctions:detail' lot.public_id %}">매물 보기 ›</a>
+    <a href="{% url 'auctions:detail' lot.public_id %}" data-vs-detail aria-haspopup="dialog">상세 보기</a>
+    <a class="vs-open-lot" href="{% url 'auctions:detail' lot.public_id %}">매물 보기 <span aria-hidden="true">›</span></a>
   </div>
 </article>

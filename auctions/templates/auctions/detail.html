@@ -1,6 +1,8 @@
 {% extends 'auctions/base.html' %}
+{% load static %}
 {% block title %}{{ lot.name }} · 입찰랩{% endblock %}
+{% block page_styles %}<link rel="stylesheet" href="{% static 'auctions/detail.css' %}">{% endblock %}
 {% block content %}
   <p><a href="{{ return_to }}">‹ 매물 지도로 돌아가기</a></p>
-  <div class="panel detail-page">{% include 'auctions/_lot_detail.html' %}</div>
+  <div class="detail-page">{% include 'auctions/_lot_detail.html' %}</div>
 {% endblock %}

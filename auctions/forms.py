@@ -6,6 +6,8 @@ from .models import LotUse, Region
 
 
 BUDGET_CHOICES = [("", "제한 없음"), *[(str(amount * 10_000), f"{amount}억 원") for amount in (3, 5, 7, 8, 10, 12, 20)]]
+REGION_CHOICES = [("", "전체 지역"), *((value, value) for value in Region.values)]
+USE_CHOICES = [("", "전체 용도"), *((value, value) for value in LotUse.values)]
 DAY_CHOICES = [("", "전체 기간"), *[(str(days), f"{days}일 이내") for days in (7, 14, 30)]]
 PRICE_BANDS = {"lt3": (None, 3), "3-5": (3, 5), "5-10": (5, 10), "gte10": (10, None)}
 RATE_BANDS = {"lt50": (None, 50), "50-80": (50, 80), "80-100": (80, 100), "gte100": (100, None)}
@@ -15,8 +17,8 @@ class LotFilter(forms.Form):
     q = forms.CharField(required=False, max_length=120, label="검색어", widget=forms.TextInput(
         attrs={"placeholder": "지역·단지명·사건번호 검색"},
     ))
-    region = forms.ChoiceField(required=False, choices=[("", "전체 지역"), *Region.choices], label="지역")
-    use = forms.ChoiceField(required=False, choices=[("", "전체 용도"), *LotUse.choices], label="용도")
+    region = forms.ChoiceField(required=False, choices=REGION_CHOICES, label="지역")
+    use = forms.ChoiceField(required=False, choices=USE_CHOICES, label="용도")
     budget = forms.IntegerField(
         required=False, min_value=0, max_value=10**10, label="최대 가격 (만원)",
         widget=forms.Select(choices=BUDGET_CHOICES),
@@ -82,8 +84,8 @@ class BoundsForm(forms.Form):
 class ResultsFilter(forms.Form):
     STATUS_CHOICES = [("upcoming", "진행중"), ("pending", "낙찰대기"), ("sold", "완료"), ("undated", "기일 미상")]
     status = forms.ChoiceField(choices=STATUS_CHOICES, required=False)
-    region = forms.ChoiceField(choices=[("", "전체 지역"), *Region.choices], required=False, label="지역")
-    use = forms.ChoiceField(choices=[("", "전체 용도"), *LotUse.choices], required=False, label="용도")
+    region = forms.ChoiceField(choices=REGION_CHOICES, required=False, label="지역")
+    use = forms.ChoiceField(choices=USE_CHOICES, required=False, label="용도")
     price_band = forms.ChoiceField(required=False, label="가격대", choices=[
         ("", "전체 가격"), ("lt3", "3억 미만"), ("3-5", "3억 이상 5억 미만"),
         ("5-10", "5억 이상 10억 미만"), ("gte10", "10억 이상"),

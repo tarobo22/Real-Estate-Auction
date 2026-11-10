@@ -4,6 +4,7 @@
 
   const element = (id) => document.getElementById(id);
   const svg = element("fallback-map");
+  const viewport = svg.parentElement;
   const kakaoElement = element("kakao-map");
   const boundaryLayer = element("boundary-layer");
   const pinLayer = element("pin-layer");
@@ -14,14 +15,20 @@
   const clearRange = element("map-clear-range");
   const hint = element("map-hint");
   const status = element("map-status");
+  const sheetCount = element("map-sheet-count");
   const dialog = element("lot-dialog");
   const fragment = element("lot-fragment");
-  const width = 640;
-  const height = 440;
+  let width = viewport.clientWidth || 640;
+  let height = viewport.clientHeight || 440;
   const radius = 6371.0088;
   const radians = Math.PI / 180;
   const searchHint = "가로·세로 각각 30km 이내로 확대하면 이 지도에서 검색할 수 있습니다.";
   const defaultBounds = { west: 126.16, south: 37.05, east: 127.75, north: 38.05 };
+  const regionLabels = [
+    ["서울", 126.981, 37.553],
+    ["경기", 127.275, 37.457],
+    ["인천", 126.599, 37.467],
+  ];
   let pins = JSON.parse(element("initial-pins").textContent);
   let features = [];
   let bounds = fit(pins);
@@ -34,16 +41,42 @@
   let openingMarker = "";
   let dragged = null;
   let scheduled = false;
+  let locatedLot = "";
   let truncated = status.textContent.includes("100건");
-  const mobile = matchMedia("(max-width: 720px)");
-  if (mobile.matches) list.open = false;
+  const mobile = matchMedia("(max-width: 760px)");
+  let sheetOpen = false;
+  function syncSheet() {
+    list.open = !mobile.matches || sheetOpen;
+  }
+  syncSheet();
+  mobile.addEventListener("change", syncSheet);
+  list.addEventListener("toggle", () => {
+    if (mobile.matches) sheetOpen = list.open;
+  });
+
   const summary = list.querySelector("summary");
-  let touchStart = null;
-  summary.addEventListener("touchstart", (event) => { touchStart = event.changedTouches[0].clientY; }, { passive: true });
-  summary.addEventListener("touchend", (event) => {
-    if (mobile.matches && touchStart !== null && touchStart - event.changedTouches[0].clientY > 25) list.open = true;
-    touchStart = null;
-  }, { passive: true });
+  let gesture = null;
+  let ignoreClick = false;
+  summary.addEventListener("pointerdown", (event) => {
+    ignoreClick = false;
+    if (!mobile.matches || !event.isPrimary || event.pointerType === "mouse") return;
+    gesture = { id: event.pointerId, x: event.clientX, y: event.clientY };
+    summary.setPointerCapture(event.pointerId);
+  });
+  summary.addEventListener("pointerup", (event) => {
+    if (gesture?.id !== event.pointerId) return;
+    const dy = event.clientY - gesture.y;
+    const dx = Math.abs(event.clientX - gesture.x);
+    gesture = null;
+    if (Math.abs(dy) < 28 || Math.abs(dy) < dx) return;
+    ignoreClick = true;
+    list.open = dy < 0;
+  });
+  summary.addEventListener("pointercancel", () => { gesture = null; });
+  summary.addEventListener("click", (event) => {
+    if (ignoreClick && event.detail !== 0) event.preventDefault();
+    ignoreClick = false;
+  });
 
   function fit(points) {
     if (!points.length) return { ...defaultBounds };
@@ -51,7 +84,8 @@
     const latitudes = points.map((pin) => pin.latitude);
     const lon = (Math.min(...longitudes) + Math.max(...longitudes)) / 2;
     const lat = (Math.min(...latitudes) + Math.max(...latitudes)) / 2;
-    const span = Math.max(.11, (Math.max(...longitudes) - Math.min(...longitudes)) * .65,
+    const horizontalPadding = width < 480 ? .8 : .65;
+    const span = Math.max(.11, (Math.max(...longitudes) - Math.min(...longitudes)) * horizontalPadding,
       (Math.max(...latitudes) - Math.min(...latitudes)) * .85);
     return { west: lon - span, east: lon + span, south: lat - span * .7, north: lat + span * .7 };
   }
@@ -91,7 +125,13 @@
       return svgNode("path", { d, class: properties.level === 2 ? "boundary district" : "boundary",
         "fill-rule": "evenodd" });
     });
-    boundaryLayer.replaceChildren(...paths);
+    const labels = regionLabels.map(([name, lon, lat]) => {
+      const [x, y] = point(lon, lat);
+      const label = svgNode("text", { x, y, class: "map-region-label", "aria-hidden": "true" });
+      label.textContent = name;
+      return label;
+    });
+    boundaryLayer.replaceChildren(...paths, ...labels);
   }
 
   function markerGroups(project, maxX, maxY) {
@@ -119,9 +159,11 @@
     let count = 0;
     for (const row of nodes) {
       row.hidden = ids !== null && !ids.has(row.dataset.lotId);
+      row.classList.toggle("is-located", row.dataset.lotId === locatedLot);
       if (!row.hidden) count += 1;
     }
     all.hidden = ids === null;
+    sheetCount.textContent = count + "건";
     status.textContent = count + "건" + (truncated && ids === null ? " · 100건까지만 표시" : "");
   }
 
@@ -142,7 +184,8 @@
       const label = markerLabel(items);
       const size = Math.max(35, label.length * 8 + 14);
       const node = svgNode("g", {
-        class: "map-marker", role: "button", tabindex: 0, "aria-label": markerName(items),
+        class: "map-marker" + (items.some((pin) => pin.id === locatedLot) ? " is-located" : ""),
+        role: "button", tabindex: 0, "aria-label": markerName(items),
         "data-marker-key": items[0].id,
         transform: "translate(" + x + " " + y + ")",
       });
@@ -174,6 +217,7 @@
       const button = document.createElement("button");
       button.type = "button";
       button.className = "map-pin";
+      button.classList.toggle("is-located", items.some((pin) => pin.id === locatedLot));
       button.dataset.markerKey = items[0].id;
       button.textContent = markerLabel(items);
       button.setAttribute("aria-label", markerName(items));
@@ -186,6 +230,7 @@
   function updateMap() {
     const valid = validBounds(viewBounds());
     search.disabled = !valid || activeRequest !== null;
+    search.textContent = valid ? "이 지도에서 찾기" : "지도를 확대해 주세요";
     hint.textContent = valid ? "지도를 움직인 뒤 검색 버튼을 누르면 목록과 핀이 함께 갱신됩니다." : searchHint;
     if (kakao) renderKakaoPins();
     else {
@@ -201,6 +246,21 @@
       scheduled = false;
       updateMap();
     });
+  }
+
+  function resizeMap() {
+    const nextWidth = viewport.clientWidth;
+    const nextHeight = viewport.clientHeight;
+    if (!nextWidth || !nextHeight) return;
+    width = nextWidth;
+    height = nextHeight;
+    svg.setAttribute("viewBox", "0 0 " + width + " " + height);
+    if (kakao) {
+      const center = kakao.getCenter();
+      kakao.relayout();
+      kakao.setCenter(center);
+    }
+    scheduleMap();
   }
 
   function shift(x, y) {
@@ -229,6 +289,29 @@
   function setKakaoBounds(box) {
     const maps = window.kakao.maps;
     kakao.setBounds(new maps.LatLngBounds(new maps.LatLng(box.south, box.west), new maps.LatLng(box.north, box.east)));
+  }
+
+  function locatePin(id) {
+    const pin = pins.find((candidate) => candidate.id === id);
+    if (!pin) return;
+    locatedLot = id;
+    for (const row of rows.querySelectorAll("[data-lot-id]")) {
+      row.classList.toggle("is-located", row.dataset.lotId === id);
+    }
+    if (kakao) {
+      kakao.setCenter(new window.kakao.maps.LatLng(pin.latitude, pin.longitude));
+    } else {
+      const halfLon = (bounds.east - bounds.west) / 2;
+      const halfLat = (bounds.north - bounds.south) / 2;
+      const lon = Math.max(-180 + halfLon, Math.min(180 - halfLon, pin.longitude));
+      const lat = Math.max(-90 + halfLat, Math.min(90 - halfLat, pin.latitude));
+      bounds = { west: lon - halfLon, east: lon + halfLon, south: lat - halfLat, north: lat + halfLat };
+    }
+    if (mobile.matches) {
+      list.open = false;
+      viewport.focus({ preventScroll: true });
+    }
+    scheduleMap();
   }
 
   element("zoom-in").addEventListener("click", () => zoom(true));
@@ -276,13 +359,17 @@
       const data = await response.json();
       if (activeRequest !== controller) return;
       pins = data.lots;
+      if (!pins.some((pin) => pin.id === locatedLot)) locatedLot = "";
       truncated = data.truncated;
       rows.innerHTML = data.list_html;
       showRows();
       clearRange.hidden = false;
       if (mobile.matches) list.open = true;
     } catch (error) {
-      if (error.name !== "AbortError") status.textContent = "검색할 수 없습니다. 다시 시도해 주세요.";
+      if (error.name !== "AbortError") {
+        status.textContent = "검색할 수 없습니다. 다시 시도해 주세요.";
+        if (mobile.matches) list.open = true;
+      }
     } finally {
       if (activeRequest === controller) {
         activeRequest = null;
@@ -320,6 +407,11 @@
   }
 
   rows.addEventListener("click", (event) => {
+    const locate = event.target.closest("[data-map-locate]");
+    if (locate) {
+      locatePin(locate.dataset.mapLocate);
+      return;
+    }
     const link = event.target.closest(".map-lot-link");
     if (!link || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return;
     event.preventDefault();
@@ -366,7 +458,9 @@
     document.head.append(script);
   }
 
+  resizeMap();
   updateMap();
+  new ResizeObserver(resizeMap).observe(viewport);
   fetch(app.dataset.boundaries).then((response) => {
     if (!response.ok) throw new Error("boundaries");
     return response.json();

@@ -2,13 +2,15 @@
   <div class="vs-pair">
     {% include 'auctions/_vs_card.html' with lot=current_round.first slot='A' %}
     {% include 'auctions/_vs_card.html' with lot=current_round.second slot='B' %}
+    <span class="vs-divider" aria-hidden="true">VS</span>
+    <p class="sr-only" role="status" data-vs-status></p>
   </div>
   <dialog id="vs-detail-dialog" class="detail-dialog" aria-labelledby="vs-detail-title">
     <div class="section-heading"><h2 id="vs-detail-title">비교 매물 상세</h2><form method="dialog"><button>닫기</button></form></div>
     <div id="vs-detail-body"></div>
   </dialog>
 {% elif single_lot %}
-  <div class="panel vs-card">
+  <div class="panel vs-empty">
     <p>비교 가능한 물건이 한 건입니다.</p>
     <a href="{% url 'auctions:detail' single_lot.public_id %}">{{ single_lot.name }}</a>
   </div>

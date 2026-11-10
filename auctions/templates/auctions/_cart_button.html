@@ -4,6 +4,7 @@
   <input type="hidden" name="return_to" value="{% if cart_remove %}{% url 'auctions:cart' %}{% elif request.GET.fragment %}{{ request.path }}{% else %}{{ request.get_full_path }}{% endif %}">
   <button type="submit" name="action" value="{% if lot.public_id in cart_ids %}remove{% else %}add{% endif %}"
     aria-pressed="{% if lot.public_id in cart_ids %}true{% else %}false{% endif %}">
-    {% if cart_remove %}삭제{% elif lot.public_id in cart_ids %}장바구니에서 빼기{% else %}장바구니에 담기{% endif %}
+    {% if not cart_remove %}<svg class="cart-bookmark" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v15l-6-4-6 4z"/></svg>{% endif %}
+    <span data-cart-label>{% if cart_remove %}삭제{% elif lot.public_id in cart_ids %}장바구니에서 빼기{% else %}장바구니에 담기{% endif %}</span>
   </button>
 </form>

@@ -1,0 +1,85 @@
+.versus-page { max-width: 980px; margin-inline: auto; }
+.versus-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--line); padding-bottom: 12px; }
+.versus-header h1 { margin-bottom: 6px; font-size: clamp(1.5rem, 4vw, 2.15rem); }
+.versus-header p { margin: 0; }
+.versus-header > a { flex: none; background: var(--green); color: white; font-size: .85rem; }
+.versus-caption { margin: 12px 0; font-size: .84rem; }
+.vs-empty { padding: 16px; }
+
+.vs-pair { position: relative; align-items: start; gap: 20px; }
+.home-vs-section .vs-pair { gap: 12px; }
+.vs-card { --vs-inset: 14px; position: relative; padding: 0; min-width: 0; isolation: isolate; }
+.vs-visual {
+  position: relative;
+  min-height: 200px;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #e5f2eb, #397153 75%, #254f3b);
+  transition: box-shadow 160ms ease;
+}
+.vs-visual:has(img)::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 29%, #0e1b1533 40%, #0e1b1580 58%, #0e1b15a3 100%);
+  content: "";
+}
+.vs-visual img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.vs-placeholder { position: absolute; top: 30%; left: 50%; width: 44px; transform: translate(-50%, -50%); fill: none; stroke: #245b41; stroke-width: 1.65; stroke-linecap: round; stroke-linejoin: round; }
+.vs-letter, .vs-photo-label { position: absolute; z-index: 1; top: 8px; display: grid; place-items: center; border-radius: 6px; }
+.vs-letter { inset-inline-start: 8px; width: 29px; height: 29px; background: white; color: var(--ink); font-size: .82rem; font-weight: 750; box-shadow: 0 1px 4px #0002; }
+.vs-photo-label { inset-inline-end: 8px; padding: 3px 6px; background: #14211de5; color: white; font-size: 10px; line-height: 1.3; }
+.vs-divider {
+  position: absolute;
+  z-index: 2;
+  top: 36%;
+  left: 50%;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  transform: translate(-50%, -50%);
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: white;
+  color: var(--ink);
+  font-size: .76rem;
+  font-weight: 750;
+  box-shadow: 0 2px 8px #14211d18;
+  pointer-events: none;
+}
+.home-vs-section .vs-divider { width: 33px; height: 33px; }
+.vs-copy { position: absolute; z-index: 1; inset: auto var(--vs-inset) 45px; color: white; text-shadow: 0 1px 3px #0e1b15e0, 0 0 7px #0e1b1599; }
+.vs-copy h3 { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; margin: 0 0 5px; font-size: .95rem; overflow-wrap: anywhere; }
+.vs-copy p { margin: 0; }
+.vs-price span { display: block; color: #e1ebe4; font-size: .72rem; }
+.vs-price strong { display: block; color: white; font-size: clamp(.93rem, 2vw, 1.33rem); line-height: 1.18; letter-spacing: -.04em; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.vs-copy .vs-advantage { margin-top: 5px; overflow: hidden; color: #edf4ef; font-size: .72rem; text-overflow: ellipsis; white-space: nowrap; }
+.vs-pick { position: absolute; z-index: 1; inset: 0; width: 100%; min-height: 0; border: 0; border-radius: 10px; padding: 0; background: transparent; }
+.vs-pick:focus-visible { outline-color: white; outline-offset: -4px; }
+.vs-card:has(.vs-pick:not(:disabled):hover) h3 { text-decoration: underline; text-underline-offset: 3px; }
+.vs-card.is-selected .vs-visual { box-shadow: 0 0 0 2px var(--green), 0 0 16px #169d5b55; }
+.vs-card.is-selected .vs-letter { background: var(--green); color: white; }
+.vs-card-actions { position: absolute; z-index: 2; inset: auto var(--vs-inset) 3px; justify-content: space-between; gap: 4px; margin: 0; }
+.vs-card-actions a { display: inline-flex; align-items: center; gap: 4px; min-height: 36px; color: white; font-size: .72rem; font-weight: 650; text-decoration: none; text-shadow: 0 1px 3px #0e1b15e0, 0 0 7px #0e1b1599; white-space: nowrap; }
+.vs-card-actions a:hover { text-decoration: underline; }
+.vs-card-actions a:focus-visible { outline-color: white; outline-offset: 1px; }
+
+@media (max-width: 760px) {
+  .versus-header > a { padding-inline: 10px; }
+  .vs-pair { gap: 12px; }
+  .vs-card { --vs-inset: 9px; }
+  .vs-letter { width: 23px; height: 23px; }
+  .vs-divider { width: 33px; height: 33px; }
+  .home-vs-section .vs-open-lot { display: none; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .vs-pair.is-entering .vs-card { animation: vs-enter 200ms ease-out; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .vs-visual { transition: none; }
+}
+@keyframes vs-enter {
+  from { opacity: .55; transform: translateX(6px); }
+  to { opacity: 1; transform: translateX(0); }
+}

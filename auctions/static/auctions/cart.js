@@ -28,7 +28,10 @@
         const content = Array.from(document.querySelectorAll("[data-cart-content]"));
         const focusInContents = content.some((panel) => panel.contains(active));
         for (const panel of content) panel.innerHTML = result.html;
-        for (const count of document.querySelectorAll("[data-cart-count]")) count.textContent = result.count;
+        for (const count of document.querySelectorAll("[data-cart-count]")) {
+          count.textContent = result.count;
+          if (count.classList.contains("cart-count")) count.hidden = result.count === 0;
+        }
         const saved = new Set(result.ids);
         for (const candidate of document.querySelectorAll("[data-cart-form]:not([data-cart-remove])")) {
           const lot = candidate.elements.namedItem("lot");
@@ -37,7 +40,7 @@
           const exists = saved.has(lot.value);
           toggle.value = exists ? "remove" : "add";
           toggle.setAttribute("aria-pressed", String(exists));
-          toggle.textContent = exists ? "장바구니에서 빼기" : "장바구니에 담기";
+          toggle.querySelector("[data-cart-label]").textContent = exists ? "장바구니에서 빼기" : "장바구니에 담기";
         }
         if (focusInContents && dialog.open) dialog.querySelector("[data-close-cart]").focus();
         notice.textContent = "장바구니 " + result.count + "건";

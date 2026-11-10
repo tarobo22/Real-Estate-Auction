@@ -1,6 +1,8 @@
 (() => {
   const dialog = document.getElementById("vs-detail-dialog");
   const body = document.getElementById("vs-detail-body");
+  const pair = document.querySelector(".vs-pair");
+  const status = pair?.querySelector("[data-vs-status]");
   const buttons = document.querySelectorAll("[data-vs-slot]");
   let pending = false;
   let detailRequest = null;
@@ -13,26 +15,26 @@
       if (pending) return;
       pending = true;
       const button = event.submitter;
-      if (button.matches(":focus-visible")) {
-        try { sessionStorage.setItem("auction-vs-focus", button.dataset.vsSlot); } catch { /* Optional. */ }
-      }
+      const slot = button.matches(":focus-visible") ? button.dataset.vsSlot : "pointer";
+      try { sessionStorage.setItem("auction-vs-focus", slot); } catch { /* Optional. */ }
       const winner = document.createElement("input");
       winner.type = "hidden";
       winner.name = "winner";
       winner.value = button.value;
       form.append(winner);
-      button.classList.add("is-selected");
-      button.querySelector(".vs-pick-label").textContent = "선택했어요";
+      button.closest(".vs-card").classList.add("is-selected");
+      if (status) status.textContent = `매물 ${button.dataset.vsSlot} 선택 완료`;
       for (const candidate of buttons) candidate.disabled = true;
       const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-      setTimeout(() => form.submit(), reduced ? 150 : 450);
+      setTimeout(() => form.submit(), reduced ? 0 : 350);
     });
   }
 
-  if (document.querySelector('[aria-current="page"][href="/vs/"]')) {
+  if (document.querySelector(".versus-page")) {
     try {
       const slot = sessionStorage.getItem("auction-vs-focus");
       sessionStorage.removeItem("auction-vs-focus");
+      if (slot) pair?.classList.add("is-entering");
       if (!new URLSearchParams(location.search).has("recommend")) {
         for (const button of buttons) if (button.dataset.vsSlot === slot) button.focus();
       }
@@ -42,7 +44,7 @@
 
   const recommendation = document.getElementById("recommendation");
   const showRecommendation = document.querySelector("[data-open-recommendation]");
-  if (recommendation?.showModal) {
+  if (recommendation?.showModal && showRecommendation) {
     showRecommendation.addEventListener("click", (event) => {
       event.preventDefault();
       recommendation.showModal();
@@ -78,6 +80,9 @@
       }
     });
   }
+  dialog.addEventListener("click", (event) => {
+    if (event.target === dialog) dialog.close();
+  });
   dialog.addEventListener("close", () => {
     detailRequest?.abort();
     detailRequest = null;

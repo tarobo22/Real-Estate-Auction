@@ -34,11 +34,13 @@ def pins_for(lots):
 def home(request):
     upcoming = map_lots({"kind": "upcoming"})
     sold = map_lots({"kind": "sold"})
+    sold_preview = list(sold[:8])
     photos = [f"auctions/home-example-{index}.webp" for index in range(1, 5)]
     round_, single = current_comparison(request)
     return render(request, "auctions/home.html", {
         "filter": LotFilter(), "categories": home_categories(upcoming, sold),
-        "upcoming": zip(upcoming[:8], photos * 2), "sold": zip(sold[:8], photos[2:] + photos * 2),
+        "upcoming": zip(upcoming[:8], photos * 2), "sold": zip(sold_preview, photos[2:] + photos * 2),
+        "sold_title": "낙찰 사례" if any(lot.is_demo for lot in sold_preview) else "실제 낙찰 사례",
         "snapshot": SNAPSHOT_DATE, "active": "home",
         "current_round": round_, "single_lot": single,
     })

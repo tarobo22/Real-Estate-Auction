@@ -1,0 +1,28 @@
+.lot-detail { display: grid; gap: 12px; min-width: 0; font-size: 14px; }
+.lot-section { min-width: 0; padding: clamp(12px, 2.6vw, 22px); border: 1px solid #e3e9e5; border-radius: 12px; background: #fff; }
+.lot-section h2 { margin: 5px 0 3px; font-size: clamp(21px, 4vw, 29px); letter-spacing: -.035em; }
+.lot-section h3 { margin: 0 0 8px; font-size: 16px; }
+.lot-section .muted { font-size: 13px; }
+.lot-detail-heading { display: flex; align-items: start; justify-content: space-between; gap: 6px 12px; flex-wrap: wrap; }
+.lot-detail-heading button { display: inline-flex; align-items: center; gap: 5px; min-height: 34px; padding: 4px 7px; color: var(--green); font-size: 12px; }
+.lot-kind { padding: 3px 7px; border-radius: 12px; background: #edf5ef; color: var(--green); font-size: 12px; }
+.lot-price-summary { display: flex; flex-wrap: wrap; margin: 12px 0; padding-block: 8px; border-block: 1px solid var(--line); }
+.lot-price-summary div { flex: 1 1 135px; padding: 4px 10px; }
+.lot-price-summary div + div { border-inline-start: 1px solid var(--line); }
+.lot-price-summary dt, .lot-case-data dt { color: var(--muted); font-size: 12px; }
+.lot-price-summary dd { margin: 3px 0 0; font-size: 16px; font-weight: 650; }
+.lot-price-summary div:first-child dd { color: var(--green); font-size: 20px; letter-spacing: -.035em; }
+.lot-case-data { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 4px 14px; margin: 6px 0 12px; align-items: baseline; }
+.lot-case-data dd { margin: 0; overflow-wrap: anywhere; }
+.lot-detail-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 5px; font-size: 13px; }
+.lot-detail-actions .button { padding: 5px 8px; }
+.lot-demo-note { color: var(--muted); font-size: 13px; }
+.lot-demo-photo { position: relative; margin: 0; overflow: hidden; border-radius: 8px; }
+.lot-demo-photo img { display: block; width: 100%; max-height: 360px; aspect-ratio: 16 / 9; object-fit: cover; }
+.lot-demo-photo figcaption { position: absolute; right: 7px; bottom: 7px; padding: 3px 6px; border-radius: 4px; background: #172820; color: #fff; font-size: 11px; }
+.lot-trades-scroll { overflow-x: auto; }
+.lot-trades-scroll table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
+.lot-trades-scroll th, .lot-trades-scroll td { padding: 7px 5px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.lot-trades-scroll th { background: #f6f8f6; font-size: 12px; font-weight: 600; }
+.lot-trades-scroll td:nth-child(3) { color: var(--green); font-weight: 650; }
+.lot-section :is(ul, p):last-child { margin-bottom: 0; }

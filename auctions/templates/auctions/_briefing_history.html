@@ -1,0 +1,5 @@
+<ul class="briefing-history-list">
+  {% for item in recent %}
+    <li><a href="?scope={{ scope }}&amp;thread={{ item.token }}"{% if item == thread %} aria-current="page"{% endif %}>{{ item.title }}</a></li>
+  {% empty %}<li class="muted">최근 대화가 없습니다.</li>{% endfor %}
+</ul>

@@ -1,16 +1,25 @@
 {% extends 'auctions/base.html' %}
 {% load static %}
 {% block title %}낙찰 · 입찰랩{% endblock %}
+{% block page_styles %}<link rel="stylesheet" href="{% static 'auctions/results.css' %}">{% endblock %}
 {% block content %}
-  <h1>낙찰</h1>
-  <p class="muted">진행중은 서울 시간 기준 미래 기일입니다. 당일과 지난 기일은 결과가 확인되기 전까지 낙찰대기로 표시됩니다.</p>
-  <nav class="status-tabs" aria-label="낙찰 상태">
-    {% for tab in status_tabs %}
-      <a class="button" href="{{ tab.url }}"{% if tab.value == status %} aria-current="page"{% endif %}>{{ tab.label }} {{ tab.count }}건</a>
-    {% endfor %}
-  </nav>
-  <details class="panel filter-panel" id="result-filters" open>
-    <summary>가격·지역 필터</summary>
+<section class="results-page" aria-labelledby="results-title">
+  <header class="results-intro"><h1 id="results-title">낙찰</h1><p class="muted">매각기일과 실제 낙찰가를 진행상태별로 확인하세요.</p></header>
+  <div class="result-stages" data-result-stages>
+    <span id="result-stages-label">진행상태</span>
+    <nav data-result-status-strip aria-labelledby="result-stages-label">
+      {% for tab in status_tabs %}{% if tab.value != 'undated' %}
+        <a href="{{ tab.url }}" data-status="{{ tab.value }}"{% if tab.value == status %} aria-current="page"{% endif %}>{{ tab.label }} <small data-status-count>{{ tab.count }}</small></a>
+      {% endif %}{% endfor %}
+    </nav>
+    {% for tab in status_tabs %}{% if tab.value == 'undated' %}
+      <a class="undated-link" href="{{ tab.url }}" data-status="undated"{% if status == 'undated' %} aria-current="page"{% endif %}>{{ tab.label }} <small data-status-count>{{ tab.count }}</small></a>
+    {% endif %}{% endfor %}
+  </div>
+  <div id="results-content" data-results-state="{{ status }}">
+  <p class="result-status-description" role="status">{% if status == 'pending' %}매각기일이 도래했으며 낙찰 결과가 아직 수록되지 않은 물건입니다.{% elif status == 'sold' %}낙찰가가 수록된 물건입니다.{% if includes_demo %} 시연 매물에는 예시 가격을 표시합니다.{% endif %}{% elif status == 'undated' %}매각기일이 확인되지 않은 물건입니다.{% else %}매각기일이 남아 있는 입찰 예정 물건입니다.{% endif %}</p>
+  <details class="filter-panel" id="result-filters" open>
+    <summary>상세 필터</summary>
     <form class="filter-grid" action="{% url 'auctions:results' %}" method="get">
       <input type="hidden" name="status" value="{{ status }}">
       {{ filter.status.errors }}
@@ -29,22 +38,32 @@
       <a href="?status={{ status }}">초기화</a>
     </form>
   </details>
+  <div class="results-toolbar"><span>{% for tab in status_tabs %}{% if tab.value == status %}{{ tab.label }}{% endif %}{% endfor %} <strong>{{ lots|length }}건</strong></span><a href="?status={{ status }}">필터 초기화</a></div>
   <div class="results-list">
-    {% for lot in lots %}
-      <article class="panel result-row">
-        <div>
-          <p class="muted">{{ lot.address }} · {{ lot.use }}</p>
+    {% for lot, photo in rows %}
+      <article class="result-row">
+        <div class="result-identity">
+          <div class="result-address"><span class="result-use">{{ lot.use }}</span><span>{{ lot.address }}</span>{% include 'auctions/_cart_button.html' %}</div>
           <h2><a href="{% url 'auctions:detail' lot.public_id %}">{{ lot.name }}</a></h2>
-          <p>{{ lot.price_label }} <strong>{{ lot.display_price }}</strong></p>
-          {% if status == 'sold' %}
-            <p>낙찰일 {{ lot.sale_date|date:"Y.m.d"|default:"미수록" }} · 낙찰가율 {% if lot.rate != None %}{{ lot.rate|floatformat:1 }}%{% else %}미확인{% endif %}</p>
-          {% else %}<p>매각기일 {{ lot.auction_date|date:"Y.m.d"|default:"미수록" }}</p>{% endif %}
+          {% if lot.area or lot.floor %}<p class="muted">{% if lot.area %}면적 {{ lot.area|floatformat:'-4' }}㎡{% endif %}{% if lot.floor %} · {{ lot.floor }}층{% endif %}</p>{% endif %}
         </div>
-        {% include 'auctions/_cart_button.html' %}
+        <div class="result-money">
+          <p>{{ lot.price_label }} <strong>{{ lot.display_price }}</strong></p>
+          <p class="muted">감정가 {{ lot.display_appraisal }}{% if status == 'sold' %} · 낙찰가율 {% if lot.rate != None %}{{ lot.rate|floatformat:1 }}%{% else %}미확인{% endif %}{% endif %}</p>
+        </div>
+        <div class="result-case muted">
+          {% if status == 'sold' %}
+            <p>낙찰일 {{ lot.sale_date|date:"Y.m.d"|default:"미수록" }}</p>
+          {% else %}<p>매각기일 {{ lot.auction_date|date:"Y.m.d"|default:"미수록" }}</p>{% endif %}
+          {% if lot.case_label %}<p>{{ lot.case_label }}</p>{% endif %}
+        </div>
+        {% if photo %}<div class="result-thumbnail"><img src="{% static photo %}" alt="" loading="lazy" width="96" height="96"><span>{% if lot.is_demo %}AI 예시 사진{% else %}예시 사진{% endif %}</span></div>{% endif %}
       </article>
     {% empty %}
-      <p>조건에 맞는 물건이 없습니다. <a href="?status={{ status }}">필터 초기화</a></p>
+      <p class="result-empty">조건에 맞는 물건이 없습니다. <a href="?status={{ status }}">필터 초기화</a></p>
     {% endfor %}
   </div>
+  </div>
+</section>
 {% endblock %}
 {% block scripts %}<script defer src="{% static 'auctions/results.js' %}"></script>{% endblock %}

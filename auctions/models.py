@@ -192,3 +192,22 @@ class ComparisonRound(models.Model):
                 name="auction_winner_belongs_to_round",
             ),
         ]
+
+
+class BriefingThread(models.Model):
+    class Scope(models.TextChoices):
+        ALL = "all", "전체"
+        WINNERS = "winners", "이긴 매물"
+
+    session = models.ForeignKey("sessions.Session", on_delete=models.CASCADE)
+    token = models.UUIDField(default=uuid4, unique=True, editable=False)
+    scope = models.CharField(max_length=8, choices=Scope)
+    title = models.CharField(max_length=80)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+class BriefingExchange(models.Model):
+    thread = models.ForeignKey(BriefingThread, on_delete=models.CASCADE, related_name="exchanges")
+    question = models.CharField(max_length=240)
+    answer = models.TextField()
+    lot_ids = models.JSONField(default=list)

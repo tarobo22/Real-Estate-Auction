@@ -40,6 +40,22 @@
   }
   if (location.hash === "#winner-history") document.getElementById("winner-history")?.focus();
 
+  const recommendation = document.getElementById("recommendation");
+  const showRecommendation = document.querySelector("[data-open-recommendation]");
+  if (recommendation?.showModal) {
+    showRecommendation.addEventListener("click", (event) => {
+      event.preventDefault();
+      recommendation.showModal();
+    });
+    recommendation.addEventListener("close", () => showRecommendation.focus({ preventScroll: true }));
+    if (recommendation.dataset.auto === "1") {
+      recommendation.showModal();
+      const url = new URL(location.href);
+      url.searchParams.delete("recommend");
+      history.replaceState(null, "", url);
+    }
+  }
+
   if (!dialog?.showModal) return;
   for (const link of document.querySelectorAll("[data-vs-detail]")) {
     link.addEventListener("click", async (event) => {

@@ -18,6 +18,7 @@
         <a href="{% url 'auctions:map' %}"{% if active == 'map' %} aria-current="page"{% endif %}>매물 지도</a>
         <a href="{% url 'auctions:results' %}"{% if active == 'results' %} aria-current="page"{% endif %}>낙찰</a>
         <a href="{% url 'auctions:vs' %}"{% if active == 'vs' %} aria-current="page"{% endif %}>경매 VS</a>
+        <a href="{% url 'auctions:briefing' %}"{% if active == 'briefing' %} aria-current="page"{% endif %}>AI 브리핑</a>
         {% block nav %}{% endblock %}
       </nav>
       <a id="cart-opener" class="button" href="{% url 'auctions:cart' %}" aria-haspopup="dialog">장바구니 <span data-cart-count>{{ cart_count }}</span>건</a>

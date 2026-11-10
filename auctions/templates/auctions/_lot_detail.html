@@ -3,6 +3,7 @@
   <h2>{{ lot.name }}</h2>
   <p>{{ lot.price_label }} <strong class="detail-price">{{ lot.display_price }}</strong></p>
   {% include 'auctions/_cart_button.html' %}
+  <a href="{% url 'auctions:briefing' %}?lot={{ lot.public_id }}">이 매물로 브리핑</a>
   <dl class="detail-grid">
     <div><dt>사건번호</dt><dd>{{ lot.case_label|default:"미수록" }}</dd></div>
     <div><dt>매각기일</dt><dd>{{ lot.auction_date|date:"Y.m.d"|default:"미수록" }}</dd></div>

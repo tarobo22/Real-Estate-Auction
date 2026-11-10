@@ -81,3 +81,10 @@ class ResultsFilter(forms.Form):
             if values.get(low) is not None and values.get(high) is not None and values[low] > values[high]:
                 self.add_error(high, "최댓값은 최솟값 이상이어야 합니다.")
         return values
+
+
+class BriefingForm(forms.Form):
+    question = forms.CharField(
+        max_length=240, label="질문",
+        widget=forms.Textarea(attrs={"rows": 3, "placeholder": "예: 인천 아파트 5억 이하 찾아줘"}),
+    )

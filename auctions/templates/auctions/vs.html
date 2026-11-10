@@ -5,7 +5,7 @@
   <div class="section-heading"><h1>경매 VS</h1>{% block vs_actions %}{% endblock %}</div>
   <p class="muted">같은 상태의 두 물건을 보고, 먼저 검토할 물건을 골라 보세요.</p>
   {% include 'auctions/_vs_pair.html' %}
-  {% block recommendation %}{% endblock %}
+  {% include 'auctions/_recommendation.html' %}
   <section class="section" aria-labelledby="winner-history">
     <div class="section-heading">
       <h2 id="winner-history" tabindex="-1">이긴 매물 <span class="pill">고유 {{ unique_count }}건</span></h2>

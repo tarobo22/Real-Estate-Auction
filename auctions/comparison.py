@@ -1,3 +1,4 @@
+from datetime import date
 from itertools import combinations
 from random import choice
 from urllib.parse import urlencode
@@ -12,6 +13,29 @@ from django.views.decorators.http import require_http_methods
 from .models import AuctionLot, ComparisonRound
 from .queries import SNAPSHOT_DATE
 from .sessions import browser_session, lock_browser_session
+
+
+RECOMMENDATION_MIN = 5
+
+
+def recommendations(lots):
+    upcoming = [
+        lot for lot in lots
+        if lot.bid is None and lot.auction_date and lot.auction_date >= SNAPSHOT_DATE
+    ]
+    dated = sorted(upcoming, key=lambda lot: (lot.auction_date, lot.public_id))
+    cheapest = min(
+        (lot for lot in dated if lot.minimum is not None),
+        key=lambda lot: (lot.minimum, lot.auction_date, lot.public_id),
+        default=None,
+    )
+    primary = ([cheapest] + [lot for lot in dated if lot != cheapest] if cheapest else dated)[:2]
+    sold = sorted(
+        (lot for lot in lots if lot.bid is not None),
+        key=lambda lot: (lot.sale_date or date.min, lot.public_id),
+        reverse=True,
+    )
+    return primary, sold[:2 - len(primary)]
 
 
 def round_history(session):
@@ -97,7 +121,7 @@ def submit_round(request):
         round_.winner = selected
         round_.save(update_fields=["winner"])
         next_url = reverse("auctions:vs")
-        if len(seen) == 4 and selected.pk not in seen:
+        if len(seen) == RECOMMENDATION_MIN - 1 and selected.pk not in seen:
             next_url += "?" + urlencode({"recommend": "1"})
         return redirect(next_url)
 
@@ -109,7 +133,9 @@ def versus(request):
     round_, single = current_comparison(request)
     session = browser_session(request)
     history = list(round_history(session).select_related("winner").order_by("-pk")) if session else []
+    winners = {row.winner_id: row.winner for row in history}
+    primary, sold = recommendations(winners.values()) if len(winners) >= RECOMMENDATION_MIN else ([], [])
     return render(request, "auctions/vs.html", {
         "current_round": round_, "single_lot": single, "history": history,
-        "unique_count": len({row.winner_id for row in history}), "active": "vs",
+        "unique_count": len(winners), "active": "vs", "recommended": primary, "sold_reference": sold,
     })

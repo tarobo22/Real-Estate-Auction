@@ -1,0 +1,12 @@
+{% if lots %}
+  <ul class="briefing-lots">
+    {% for lot in lots %}
+      <li>
+        <a href="{% url 'auctions:detail' lot.public_id %}">{{ lot.name }}</a>
+        <span>{{ lot.price_label }} <strong>{{ lot.display_price }}</strong></span>
+        {% if lot.bid != None %}<span>낙찰일 {{ lot.sale_date|date:"Y.m.d"|default:"미수록" }}</span>
+        {% else %}<span>매각기일 {{ lot.auction_date|date:"Y.m.d"|default:"미수록" }}</span>{% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+{% endif %}

@@ -17,6 +17,9 @@
       {% endwith %}
     {% endfor %}
   </ul>
+  {% if cart_rows|length >= 2 %}
+    <a href="{% url 'auctions:briefing' %}?{% for item in cart_rows|slice:':2' %}lot={{ item.lot.public_id }}{% if not forloop.last %}&amp;{% endif %}{% endfor %}">두 매물로 브리핑</a>
+  {% endif %}
 {% else %}
   <p>아직 담은 매물이 없어요.</p>
   <a href="{% url 'auctions:map' %}">매물 지도 열기</a>

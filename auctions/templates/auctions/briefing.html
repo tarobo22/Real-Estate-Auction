@@ -1,0 +1,52 @@
+{% extends 'auctions/base.html' %}
+{% load static %}
+{% block title %}AI 브리핑 · 입찰랩{% endblock %}
+{% block content %}
+  <div class="section-heading">
+    <h1>AI 브리핑</h1>
+    <a href="{% url 'auctions:briefing' %}?scope={{ scope }}">새 대화</a>
+  </div>
+  <p class="muted">공개 사례를 규칙으로 검색합니다. 기일과 조건은 사건 상세의 출처에서 확인하세요.</p>
+  {% if scope == 'winners' %}<p><span class="pill">이긴 매물만 조회</span> <a href="{% url 'auctions:briefing' %}">전체 매물 검색</a></p>{% endif %}
+  <div class="briefing-layout">
+    <details class="panel briefing-history" id="briefing-history" open>
+      <summary>최근 대화</summary>
+      <ul>
+        {% for item in recent %}
+          <li><a href="?scope={{ scope }}&amp;thread={{ item.token }}"{% if item == thread %} aria-current="page"{% endif %}>{{ item.title }}</a></li>
+        {% empty %}<li>최근 대화가 없습니다.</li>{% endfor %}
+      </ul>
+    </details>
+    <section class="panel briefing-thread">
+      {% if not eligible %}
+        <p>경매 VS에서 고유한 매물 5건을 고르면 후보 범위에서 브리핑을 열 수 있어요.</p>
+        <a href="{% url 'auctions:vs' %}">경매 VS에서 계속 선택하기</a>
+      {% else %}
+        {% for message, lots in messages %}
+          <article class="briefing-turn">
+            <p class="briefing-question">{{ message.question|linebreaksbr }}</p>
+            <p>{{ message.answer }}</p>
+            {% include 'auctions/_briefing_lots.html' %}
+          </article>
+        {% empty %}
+          <h2>어떤 경매 물건을 찾으세요?</h2>
+          {% if preview %}{% include 'auctions/_briefing_lots.html' with lots=preview %}{% endif %}
+          <div class="briefing-suggestions">
+            <button type="button" data-prompt="인천 아파트 5억 이하 찾아줘">인천 5억 이하 아파트</button>
+            <button type="button" data-prompt="서울 낙찰 사례 보여줘">서울 낙찰 사례</button>
+          </div>
+        {% endfor %}
+        <form method="post" action="{% url 'auctions:briefing' %}" id="briefing-form">
+          {% csrf_token %}
+          <input type="hidden" name="scope" value="{{ scope }}">
+          {% if thread %}<input type="hidden" name="thread" value="{{ thread.token }}">{% endif %}
+          {% for lot in preview %}<input type="hidden" name="lot" value="{{ lot.public_id }}">{% endfor %}
+          <label for="{{ form.question.id_for_label }}">{{ form.question.label }}</label>
+          {{ form.question }}{{ form.question.errors }}
+          <button class="button primary" type="submit">전송</button>
+        </form>
+      {% endif %}
+    </section>
+  </div>
+{% endblock %}
+{% block scripts %}<script defer src="{% static 'auctions/briefing.js' %}"></script>{% endblock %}

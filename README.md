@@ -40,6 +40,16 @@ docker compose -p auction-lab-tdd -f compose.test.yaml down
 
 테스트는 외부 포트를 열지 않는 별도 PostgreSQL 17·PostGIS 3.6 인스턴스와 임시 볼륨을 사용합니다. 이 테스트 구성은 운영에 사용하지 않습니다.
 
+시드까지 적재한 로컬 서버를 켜고 Chromium으로 주요 흐름을 검증할 수 있습니다.
+
+```sh
+python -m pip install -r requirements-browser.txt
+python -m playwright install chromium
+AUCTION_BROWSER_URL=http://127.0.0.1:8000 python -m unittest discover -s browser_tests -v
+```
+
+브라우저 테스트는 테스트용 인스턴스에서 실행합니다. 확인 범위는 홈 검색과 지도·장바구니, 모바일 목록 복귀, VS 추천과 브리핑, 문의 문안의 클립보드 상태입니다.
+
 ## 공간 데이터와 출처
 
 매물의 공개 ID는 기존 시연 데이터와 같습니다. 가져온 경·위도에서 WGS84 포인트를 생성하고 GiST 인덱스로 지도 범위를 조회합니다. 좌표 미수록 물건은 초기 목록에 표시되며 핀과 범위 검색에서는 빠집니다.

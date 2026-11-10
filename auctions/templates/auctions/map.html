@@ -1,0 +1,47 @@
+{% extends 'auctions/base.html' %}
+{% load static %}
+{% block title %}매물 지도 · 입찰랩{% endblock %}
+{% block content %}
+  <h1>매물 지도</h1>
+  <form id="map-filters" class="filter-grid" action="{% url 'auctions:map' %}" method="get">
+    {% include 'auctions/_search_fields.html' %}
+    <div class="field"><label for="{{ filter.kind.id_for_label }}">상태</label>{{ filter.kind }}{{ filter.kind.errors }}</div>
+    <div class="field"><label for="{{ filter.days.id_for_label }}">기간 (일)</label>{{ filter.days }}{{ filter.days.errors }}</div>
+    <button class="button primary" type="submit">조건 적용</button>
+  </form>
+  <div class="map-layout" id="map-app" data-api="{% url 'auctions:map-api' %}"
+       data-boundaries="{% static 'auctions/boundaries.json' %}" data-kakao-key="{{ kakao_key }}">
+    <details class="panel map-list" id="map-list" open>
+      <summary>매물 목록</summary>
+      <div class="map-list-content">
+        <p id="map-status" role="status">{{ lots|length }}건{% if truncated %} · 100건까지만 표시{% endif %}</p>
+        <button type="button" id="map-all" hidden>묶음 선택 해제</button>
+        <div id="map-rows">{% include 'auctions/_map_rows.html' %}</div>
+      </div>
+    </details>
+    <section class="panel map-panel" aria-label="수도권 지도">
+      <div class="map-tools">
+        <strong id="map-provider">행정구역 지도</strong>
+        <button type="button" id="zoom-in" aria-label="지도 확대">+</button>
+        <button type="button" id="zoom-out" aria-label="지도 축소">−</button>
+        <button type="button" id="zoom-reset" aria-label="지도 초기화">초기화</button>
+      </div>
+      <div class="map-viewport">
+        <svg id="fallback-map" viewBox="0 0 640 440" role="group" aria-label="수도권 행정구역과 매물" tabindex="0">
+          <g id="boundary-layer"></g><g id="pin-layer"></g>
+        </svg>
+        <div id="kakao-map" hidden></div>
+        <button type="button" id="map-search" class="button primary" disabled>이 지도에서 찾기</button>
+      </div>
+      <p class="muted" id="map-hint">가로·세로 각각 30km 이내로 확대하면 이 지도에서 검색할 수 있습니다.</p>
+      <p class="muted map-credit">핀은 동네 기준 · 경계는 간소화한 <a href="https://www.geoboundaries.org/">geoBoundaries</a> / Natural Earth / citypopulation.de 자료 · <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a></p>
+    </section>
+  </div>
+  <dialog class="detail-dialog" id="lot-dialog" aria-labelledby="dialog-title">
+    <div class="section-heading"><h2 id="dialog-title">매물 상세</h2><form method="dialog"><button aria-label="상세 닫기">닫기</button></form></div>
+    <div id="lot-fragment"></div>
+  </dialog>
+  {{ pins|json_script:"initial-pins" }}
+  <noscript><p>매물 목록에서 상세를 열 수 있습니다. 지도 이동과 범위 검색은 JavaScript가 필요합니다.</p></noscript>
+{% endblock %}
+{% block scripts %}<script defer src="{% static 'auctions/map.js' %}"></script>{% endblock %}

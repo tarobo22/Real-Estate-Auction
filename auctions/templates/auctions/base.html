@@ -1,0 +1,33 @@
+{% load static %}
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}입찰랩 · 수도권 법원경매{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'auctions/site.css' %}">
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <a class="skip" href="#main">본문 바로가기</a>
+  <header class="site-header">
+    <div class="shell header-row">
+      <a class="brand" href="{% url 'auctions:home' %}"><span aria-hidden="true">⌂</span> 입찰랩</a>
+      <nav aria-label="주 메뉴">
+        <a href="{% url 'auctions:home' %}"{% if active == 'home' %} aria-current="page"{% endif %}>경매 홈</a>
+        <a href="{% url 'auctions:map' %}"{% if active == 'map' %} aria-current="page"{% endif %}>매물 지도</a>
+        {% block nav %}{% endblock %}
+      </nav>
+    </div>
+  </header>
+  <main class="shell main" id="main">{% block content %}{% endblock %}</main>
+  <footer class="site-footer">
+    <div class="shell footer-row">
+      <strong>입찰랩</strong>
+      <span>수도권 법원경매 · 공개 사례 기준 2026.11.10</span>
+      <a href="{% url 'auctions:location-report' %}">입지 데이터 보고서</a>
+    </div>
+  </footer>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,32 @@
+<article class="lot-detail">
+  <p class="eyebrow">{{ lot.address }} · {{ lot.use }}</p>
+  <h2>{{ lot.name }}</h2>
+  <p>{{ lot.price_label }} <strong class="detail-price">{{ lot.display_price }}</strong></p>
+  <dl class="detail-grid">
+    <div><dt>사건번호</dt><dd>{{ lot.case_label|default:"미수록" }}</dd></div>
+    <div><dt>매각기일</dt><dd>{{ lot.auction_date|date:"Y.m.d"|default:"미수록" }}</dd></div>
+    {% if lot.sale_date %}<div><dt>낙찰일</dt><dd>{{ lot.sale_date|date:"Y.m.d" }}</dd></div>{% endif %}
+    <div><dt>감정가</dt><dd>{{ lot.display_appraisal }}</dd></div>
+    <div><dt>최저입찰가</dt><dd>{{ lot.display_minimum }}</dd></div>
+    {% if lot.area %}<div><dt>전용면적</dt><dd>{{ lot.area|floatformat:"-4" }}㎡</dd></div>{% endif %}
+    {% if lot.checked_on %}<div><dt>자료 확인일</dt><dd>{{ lot.checked_on|date:"Y.m.d" }}</dd></div>{% endif %}
+  </dl>
+  {% if lot.court_url %}
+    <a href="{{ lot.court_url }}" target="_blank" rel="noopener noreferrer">법원 원문 열기 ↗</a>
+  {% else %}
+    <a href="{{ court_search }}" target="_blank" rel="noopener noreferrer">법원경매정보 통합 검색 ↗</a>
+    <p class="muted">위 사건번호로 검색하세요.</p>
+  {% endif %}
+  <h3>비교 매매 실거래</h3>
+  <ul>
+    {% for trade in lot.comparable_sales.all %}
+      <li>{{ trade.sale_date|date:"Y.m.d" }} · {{ trade.display_price }}{% if trade.floor != None %} · {{ trade.floor }}층{% endif %} · <a href="{{ trade.source_url }}" target="_blank" rel="noopener noreferrer">실거래 출처 ↗</a></li>
+    {% empty %}<li>비교 매매 실거래 미수록</li>{% endfor %}
+  </ul>
+  {% if lot.trade_note %}<p>{{ lot.trade_note }}</p>{% endif %}
+  <h3>입찰 조건과 권리 확인</h3>
+  <p>{{ lot.note|default:"기일과 조건은 법원 공고에서 확인하세요." }}</p>
+  {% for url in lot.reference_urls %}
+    <a href="{{ url }}" target="_blank" rel="noopener noreferrer">참고 출처 {{ forloop.counter }} ↗</a>{% if not forloop.last %} · {% endif %}
+  {% endfor %}
+</article>

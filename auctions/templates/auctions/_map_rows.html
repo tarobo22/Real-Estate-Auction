@@ -1,0 +1,11 @@
+{% for lot in lots %}
+  <article class="map-row" data-lot-id="{{ lot.public_id }}">
+    <a class="map-lot-link" href="{% url 'auctions:detail' lot.public_id %}{% if return_to %}?return={{ return_to|urlencode:'' }}{% endif %}">
+      <strong>{{ lot.name }}</strong>
+      <span>{{ lot.address }} · {{ lot.use }}</span>
+      <span>{{ lot.price_label }} <b>{{ lot.display_price }}</b></span>
+    </a>
+  </article>
+{% empty %}
+  <p>조건에 맞는 물건이 없습니다. <a href="{% url 'auctions:map' %}">필터 초기화</a></p>
+{% endfor %}

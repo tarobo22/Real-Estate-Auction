@@ -1,0 +1,24 @@
+{% extends 'auctions/base.html' %}
+{% block title %}경매 홈 · 입찰랩{% endblock %}
+{% block content %}
+  <section class="hero">
+    <p class="eyebrow">수도권 법원경매</p>
+    <h1>어떤 경매 물건을 찾으세요?</h1>
+    <form class="filter-grid" method="get" action="{% url 'auctions:map' %}">
+      {% include 'auctions/_search_fields.html' %}
+      <button class="button primary" type="submit">지도에서 보기</button>
+    </form>
+  </section>
+  <section class="section">
+    <h2>용도별 매물</h2>
+    <div class="categories">
+      {% for use in uses %}
+        <a href="{% url 'auctions:map' %}?use={{ use|urlencode }}&amp;kind={% if use == '아파트' %}upcoming{% else %}sold{% endif %}">{{ use }}</a>
+      {% endfor %}
+    </div>
+  </section>
+  {% block home_tools %}{% endblock %}
+  {% include 'auctions/_home_rail.html' with title='다가오는 입찰' rail='upcoming' lots=upcoming %}
+  {% include 'auctions/_home_rail.html' with title='실제 낙찰 사례' rail='sold' lots=sold %}
+{% endblock %}
+{% block scripts %}{% load static %}<script defer src="{% static 'auctions/home.js' %}"></script>{% endblock %}

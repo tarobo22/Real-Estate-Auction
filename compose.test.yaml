@@ -1,0 +1,28 @@
+services:
+  db:
+    image: postgis/postgis:17-3.6
+    environment:
+      POSTGRES_DB: auction_lab
+      POSTGRES_HOST_AUTH_METHOD: trust
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U postgres -d auction_lab"]
+      interval: 2s
+      timeout: 3s
+      retries: 25
+
+  test:
+    build: .
+    environment:
+      AUCTION_DEBUG: "1"
+      AUCTION_DB_HOST: db
+      AUCTION_DB_USER: postgres
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["python", "manage.py", "test"]
+
+networks:
+  default:
+    internal: true

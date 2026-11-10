@@ -1,0 +1,363 @@
+[
+  {
+    "id": "rs1",
+    "region": "서울",
+    "district": "송파구",
+    "neighborhood": "문정동",
+    "name": "문정시영",
+    "area": 46.26,
+    "floor": 9,
+    "lon": 127.126,
+    "lat": 37.485,
+    "appraisal": 80000,
+    "minimum": 64000,
+    "failed": 1,
+    "bid": 131200,
+    "caseNumber": "서울동부지법 2023타경51714 · 물건 1",
+    "status": "2026-07-27 낙찰",
+    "note": "리모델링 분담금 액수 미정으로 기재된 사례입니다.",
+    "comps": [
+      {
+        "price": 137000,
+        "date": "2026-06-27",
+        "floor": 12
+      }
+    ],
+    "sources": [
+      "https://www.cherryauction.co.kr/items/B000211/20230130051714/1",
+      "https://kkigit.com/realty/price/11710-83"
+    ],
+    "use": "아파트",
+    "date": "2026-07-27",
+    "advantage": "같은 단지 비교 거래 확인",
+    "kind": "sold"
+  },
+  {
+    "id": "rg1",
+    "region": "경기",
+    "district": "구리시",
+    "neighborhood": "갈매동",
+    "name": "구리갈매푸르지오",
+    "area": 84.7671,
+    "floor": 17,
+    "lon": 127.124,
+    "lat": 37.634,
+    "appraisal": 81200,
+    "minimum": 81200,
+    "failed": 0,
+    "bid": 85000,
+    "caseNumber": "남양주지원 2025타경4459 · 물건 1",
+    "status": "2026-10-15 낙찰",
+    "note": "임차보증금 미변제 잔액의 인수 여부와 배당 결과를 확인해야 하는 사례입니다.",
+    "comps": [
+      {
+        "price": 80200,
+        "date": "2026-08-21",
+        "floor": 15
+      }
+    ],
+    "sources": [
+      "https://www.cherryauction.co.kr/items/B214804/20250130004459/1",
+      "https://seoulzen.com/apartment/755e339c03ddb6/?chartArea=84.7671%E3%8E%A1&chartKind=sale"
+    ],
+    "use": "아파트",
+    "date": "2026-10-15",
+    "advantage": "같은 면적의 비교 거래 확인",
+    "kind": "sold"
+  },
+  {
+    "id": "ri1",
+    "region": "인천",
+    "district": "미추홀구",
+    "neighborhood": "관교동",
+    "name": "쌍용아파트",
+    "area": 84.95,
+    "floor": 7,
+    "lon": 126.699,
+    "lat": 37.439,
+    "appraisal": 35800,
+    "minimum": 25060,
+    "failed": 1,
+    "caseNumber": "인천지법 2024타경526336 · 물건 1",
+    "status": "11월 10일 확인 · 11월 11일 기일 공고",
+    "note": "공고에 점유관계가 미상으로 표시되어 있습니다. 이후 결과는 법원에서 확인하세요.",
+    "comps": [
+      {
+        "price": 40700,
+        "date": "2026-10-21",
+        "floor": 5
+      }
+    ],
+    "sources": [
+      "https://www.auctionlabs.co.kr/detail/2039546/",
+      "https://dongnesise.com/complex/28177-40"
+    ],
+    "use": "아파트",
+    "date": "2026-11-11",
+    "advantage": "같은 면적 10월 거래 확인",
+    "kind": "upcoming"
+  },
+  {
+    "id": "rs2",
+    "region": "서울",
+    "district": "양천구",
+    "neighborhood": "신정동",
+    "name": "힐탑이루미아파트",
+    "area": 81.08,
+    "lon": 126.85025,
+    "lat": 37.52764,
+    "appraisal": 59700,
+    "minimum": 47760,
+    "failed": 1,
+    "caseNumber": "서울남부지법 2026타경4958 · 물건 1",
+    "status": "2026-11-19 10:00 입찰 예정",
+    "note": "공개된 현황조사에 점유관계가 미상으로 표시되어 있습니다. 기일·점유·임차관계는 법원 원문에서 확인하세요.",
+    "comps": [
+      {
+        "price": 57500,
+        "date": "2025-06-27",
+        "floor": 5
+      }
+    ],
+    "tradeNote": "과거 비교 사례입니다. 최근 1년 동일 면적 매매 사례는 확인되지 않았습니다.",
+    "sources": [
+      "https://admin.auct.kr/auctions/d5041353-0e81-4093-9e33-a845261942ea",
+      "https://aptchu.com/apt/11470-246"
+    ],
+    "use": "아파트",
+    "date": "2026-11-19",
+    "advantage": "감정가의 80%부터 입찰",
+    "kind": "upcoming"
+  },
+  {
+    "id": "rg2",
+    "region": "경기",
+    "district": "성남시 분당구",
+    "neighborhood": "백현동",
+    "name": "더샵판교퍼스트파크",
+    "area": 129.8347,
+    "floor": 10,
+    "lon": 127.09482,
+    "lat": 37.38335,
+    "appraisal": 228000,
+    "minimum": 159600,
+    "failed": 1,
+    "caseNumber": "수원지법 성남지원 2026타경50765 · 물건 1",
+    "status": "2026-11-23 10:00 입찰 예정",
+    "note": "공개된 감정평가 자료에서 임대관계는 미상입니다. 매각 조건과 인수 비용을 원문에서 확인하세요.",
+    "comps": [
+      {
+        "price": 205000,
+        "date": "2026-08-26",
+        "floor": 9
+      }
+    ],
+    "sources": [
+      "https://madangs.com/caview?m_code=1120260050765001",
+      "https://dapt.kr/아파트/경기/성남시-분당구/백현동/더샵판교퍼스트파크/BnA216"
+    ],
+    "use": "아파트",
+    "date": "2026-11-23",
+    "advantage": "같은 면적 8월 거래 확인",
+    "kind": "upcoming"
+  },
+  {
+    "id": "ri2",
+    "region": "인천",
+    "district": "연수구",
+    "neighborhood": "송도동",
+    "name": "송도에스케이뷰",
+    "area": 84.65,
+    "lon": 126.62692,
+    "lat": 37.41327,
+    "appraisal": 75000,
+    "minimum": 75000,
+    "failed": 0,
+    "caseNumber": "인천지법 2025타경1664 · 물건 1",
+    "status": "2026-11-17 10:00 입찰 예정",
+    "note": "임차권등기가 공개 공고에 표시되어 있습니다. 인수 여부와 배당관계는 법원 원문을 확인하세요.",
+    "comps": [],
+    "sources": [
+      "https://auct.kr/auctions/2f3dbd0f-5a14-4ba3-8ce3-6356d8f2ba06",
+      "https://madangs.com/caview?m_code=0820250001664001"
+    ],
+    "use": "아파트",
+    "date": "2026-11-17",
+    "advantage": "송도 전용 84.65㎡",
+    "kind": "upcoming"
+  },
+  {
+    "id": "ri3",
+    "region": "인천",
+    "district": "연수구",
+    "neighborhood": "청학동",
+    "name": "동보아파트",
+    "area": 59.76,
+    "lon": 126.669,
+    "lat": 37.425,
+    "appraisal": 29900,
+    "minimum": 14651,
+    "failed": 2,
+    "bid": 18388,
+    "caseNumber": "인천지법 2024타경563410",
+    "status": "2026-08-28 재매각 낙찰",
+    "note": "이전 최고가매수인의 대금 미납으로 재매각된 사례입니다. 사례 수치에는 인수 비용과 부대비용이 포함되지 않습니다.",
+    "comps": [],
+    "sources": [
+      "https://auctionquick.kr/content/incheon-cheonghak-563410"
+    ],
+    "use": "아파트",
+    "date": "2026-08-28",
+    "advantage": "실제 재매각 결과 확인",
+    "kind": "sold"
+  },
+  {
+    "id": "rs3",
+    "region": "서울",
+    "district": "노원구",
+    "neighborhood": "중계동",
+    "name": "중계 금호타운",
+    "area": 84.98,
+    "lon": 127.073,
+    "lat": 37.649,
+    "appraisal": 72400,
+    "minimum": 23724,
+    "failed": 5,
+    "bid": 26100,
+    "caseNumber": "서울북부지법 2025타경12109 · 물건 1",
+    "status": "2026-04-14 낙찰 · 05-20 대금납부",
+    "note": "공개 내역에서 선순위 임차인 전입 기록을 확인할 수 있으며 보증금 액수는 미상입니다. 낙찰가와 최종 부담액은 별도입니다.",
+    "comps": [
+      {
+        "price": 76000,
+        "date": "2026-02-27",
+        "floor": 4
+      }
+    ],
+    "sources": [
+      "https://m.wonsns.com/a/dv.php?idx=1435614",
+      "https://cy-on.kr/trades/2152/"
+    ],
+    "use": "아파트",
+    "date": "2026-04-14",
+    "advantage": "낙찰과 대금납부 기록 확인",
+    "kind": "sold"
+  },
+  {
+    "id": "so1",
+    "kind": "sold",
+    "use": "오피스텔",
+    "region": "서울",
+    "district": "강동구",
+    "neighborhood": "둔촌동",
+    "name": "한울둔촌베아체",
+    "area": 27.5,
+    "floor": 7,
+    "lon": 127.13930667,
+    "lat": 37.53260009,
+    "appraisal": 32700,
+    "minimum": 20928,
+    "bid": 26033.6,
+    "failed": 4,
+    "date": "2026-10-19",
+    "status": "2026-10-19 매각",
+    "caseNumber": "서울동부지법 2025타경51465 · 물건 1",
+    "note": "대항력 포기와 임차권등기 말소 동의 확약서 제출이 공개 자료에 표시됩니다. 해당 서류와 효력을 법원 원문에서 확인하세요.",
+    "riskTags": [
+      "임차권 서류 확인"
+    ],
+    "comps": [],
+    "advantage": "감정가와 실제 매각가 확인",
+    "sources": [
+      "https://www.cherryauction.co.kr/items/B000211/20250130051465/1",
+      "https://m.auctioning.co.kr/view/1485024"
+    ]
+  },
+  {
+    "id": "sv1",
+    "kind": "sold",
+    "use": "연립·다세대",
+    "region": "경기",
+    "district": "용인시 기흥구",
+    "neighborhood": "하갈동",
+    "name": "송명팰리채 A동",
+    "area": 64,
+    "floor": 1,
+    "lon": 127.09170342,
+    "lat": 37.25496148,
+    "appraisal": 48200,
+    "minimum": 11572.8,
+    "bid": 15372,
+    "failed": 4,
+    "date": "2026-09-15",
+    "status": "2026-09-15 매각",
+    "caseNumber": "수원지법 2025타경52570 · 물건 1",
+    "note": "매각물건명세서에 토지 지역권 설정등기가 말소되지 않고 매수인에게 인수된다고 기재되어 있습니다.",
+    "riskTags": [
+      "토지 지역권 인수"
+    ],
+    "comps": [],
+    "advantage": "매각 결과와 인수 조건 확인",
+    "sources": [
+      "https://www.cherryauction.co.kr/items/B000250/20250130052570/1",
+      "https://auct.kr/auctions/188c4362-57bd-452b-9775-05c0ed2c3063"
+    ]
+  },
+  {
+    "id": "sc1",
+    "kind": "sold",
+    "use": "상가",
+    "region": "경기",
+    "district": "성남시 분당구",
+    "neighborhood": "구미동",
+    "name": "월드쇼핑 1층 상가",
+    "area": 8.96,
+    "floor": 1,
+    "appraisal": 6200,
+    "minimum": 3038,
+    "bid": 3049,
+    "failed": 2,
+    "date": "2026-07-20",
+    "status": "2026-07-20 매각",
+    "caseNumber": "수원지법 성남지원 2025타경53329 · 물건 1",
+    "note": "감정평가 당시 인접 호수와 연결되어 카페로 사용 중이었고 임대관계는 미상입니다. 이용 범위와 매각 조건을 법원 원문에서 확인하세요.",
+    "riskTags": [
+      "점유·인수 조건 확인"
+    ],
+    "comps": [],
+    "advantage": "1층 전유 8.96㎡ 매각 사례",
+    "sources": [
+      "https://www.cherryauction.co.kr/items/B000251/20250130053329/1",
+      "https://m.wonsns.com/a/dv.php?idx=1490877"
+    ]
+  },
+  {
+    "id": "sl1",
+    "kind": "sold",
+    "use": "토지",
+    "region": "인천",
+    "district": "중구",
+    "neighborhood": "을왕동",
+    "name": "을왕동 임야 633-2",
+    "area": 3693,
+    "lon": 126.3817645,
+    "lat": 37.44509682,
+    "appraisal": 60565.2,
+    "minimum": 10179.2,
+    "bid": 16300,
+    "failed": 5,
+    "date": "2026-09-02",
+    "status": "2026-09-02 매각",
+    "caseNumber": "인천지법 2024타경16945 · 물건 1",
+    "note": "공개 자료에 보전녹지지역과 지적상 맹지로 기재되어 있습니다. 접근로와 토지이용계획을 확인하세요.",
+    "riskTags": [
+      "지적상 맹지",
+      "보전녹지"
+    ],
+    "comps": [],
+    "advantage": "지목과 매각 결과 확인",
+    "sources": [
+      "https://www.cherryauction.co.kr/items/B000240/20240130016945/1"
+    ]
+  }
+]

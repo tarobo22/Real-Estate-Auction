@@ -1,0 +1,6 @@
+{% extends 'auctions/base.html' %}
+{% block title %}{{ lot.name }} · 입찰랩{% endblock %}
+{% block content %}
+  <p><a href="{{ return_to }}">‹ 매물 지도로 돌아가기</a></p>
+  <div class="panel detail-page">{% include 'auctions/_lot_detail.html' %}</div>
+{% endblock %}

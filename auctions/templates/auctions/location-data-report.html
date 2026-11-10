@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>수도권 경매 페이지 입지·상권 데이터 연동 보고서 | 입찰랩</title>
+<style>
+:root{color-scheme:light;--ink:#15243b;--muted:#4f6078;--accent:#006b5e;--line:#dbe4ec;--paper:#f5f7fa;--mint:#78eac9;font-family:"Pretendard","Noto Sans KR","Malgun Gothic",system-ui,sans-serif}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);line-height:1.65;font-size:15px}main,.bar>div{max-width:1110px;width:calc(100% - 44px);margin:auto}.bar{background:#fff;border-bottom:1px solid var(--line)}.bar>div{display:flex;align-items:center;justify-content:space-between;min-height:57px;gap:10px}.bar a,.bar button{font-size:13px;font-weight:850;color:var(--accent)}.bar button{font-family:inherit;background:white;border:1px solid var(--line);border-radius:7px;padding:5px 10px;cursor:pointer}a{color:var(--accent);text-decoration:underline;text-underline-offset:2px}a:focus-visible,button:focus-visible{outline:3px solid #247dd5;outline-offset:4px}h1,h2,h3,p{margin:0}h1,h2,h3{letter-spacing:-.045em}.hero{background:#111d34;color:white;border-radius:17px;padding:30px 32px;margin:24px 0 14px}.hero p{color:#d2deec;max-width:760px;margin-top:8px}.eyebrow{font-size:11px;letter-spacing:.15em;font-weight:850;color:var(--accent)}.hero .eyebrow{color:var(--mint)}h1{font-size:clamp(26px,4.1vw,43px);line-height:1.24;margin-top:9px}h2{font-size:25px;line-height:1.25;margin:4px 0 9px}h3{font-size:17px;margin:3px 0 6px}.stamp{display:inline-block;margin-top:14px;color:#b8c8db;font-size:12px}.overview{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.overview article{background:white;border:1px solid var(--line);border-radius:10px;padding:12px 13px}.overview p,.section p{color:var(--muted)}.overview p{font-size:13px}.toc{display:flex;gap:5px 14px;flex-wrap:wrap;padding:10px 12px;background:#e7f1f0;border-radius:8px;margin-top:10px;font-size:13px;font-weight:800}.section{margin:29px 0 35px;scroll-margin-top:10px}.section>p{margin:5px 0 10px}.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:#fff}.table{border-collapse:collapse;width:100%;font-size:13px;min-width:660px;text-align:left}.table th,.table td{border-bottom:1px solid var(--line);padding:9px 10px;vertical-align:top}.table thead th{background:#ebf1f6;font-size:12px}.table tbody th{font-weight:850;width:16%}.table tbody td:nth-child(2){width:39%}.table tbody td:nth-child(3){color:var(--muted)}.table tr:last-child>*{border-bottom:0}.table a{font-size:12px}.table a:first-of-type{display:inline-block;margin-top:2px}.callout{background:#def2ed;border-radius:9px;padding:11px 13px;margin-top:10px}.callout strong{color:#005c50}.callout p{font-size:13px;margin:3px 0 0}.steps{margin:8px 0 0;padding-left:20px}.steps li{padding:3px 0}.steps li p{font-size:13px}.footer{border-top:1px solid var(--line);padding:13px 0 24px;color:var(--muted);font-size:12px}.footer p+p{margin-top:4px}
+@media(max-width:620px){main,.bar>div{width:calc(100% - 24px)}.hero{padding:22px 16px}.overview{grid-template-columns:1fr}.table{font-size:12px;min-width:615px}h2{font-size:22px}.section{margin:25px 0}}
+@media print{@page{size:A4;margin:12mm}body{background:#fff;font-size:11px}.bar,.toc{display:none}main{max-width:none;width:100%}.hero{margin:0 0 9px;padding:12px 14px;background:#fff;color:var(--ink);border:1px solid var(--line)}.hero p,.hero .eyebrow,.stamp{color:var(--muted)}h1{font-size:22px}.overview{grid-template-columns:repeat(3,1fr)}.overview article{padding:7px}.section{margin:12px 0 16px}h2{font-size:17px}h3{font-size:13px}.table{min-width:0;font-size:10px}.table th,.table td{padding:5px}.table a,.callout p,.overview p,.steps li p{font-size:10px}.scroll{overflow:visible}.table tr,.callout,.overview article{break-inside:avoid}.table thead{display:table-header-group}h2{break-after:avoid}}
+</style>
+</head>
+<body>
+<header class="bar"><div><a href="/">← 입찰랩 경매 페이지</a><button type="button" onclick="window.print()">인쇄 / PDF 저장</button></div></header>
+<main>
+<header class="hero">
+  <div class="eyebrow">입찰랩 · 데이터 조사 보고서</div>
+  <h1>수도권 경매 페이지<br>입지·상권 데이터 연동 보고서</h1>
+  <p>서울·경기·인천 경매 물건 주변에서 어떤 거래가 있었는지, 어떤 상권과 생활권에 속하는지, 입찰 전에 어떤 정보를 원문으로 확인할 수 있는지 정리했습니다.</p>
+  <span class="stamp">공개 데이터 확인 기준일 2026년 11월 10일</span>
+</header>
+<div class="overview">
+  <article><div class="eyebrow">01 · 매매·임대</div><h3>무엇에 얼마를 냈나</h3><p>아파트와 상가의 신고 매매가격, 아파트 전월세 계약, 상권 표본 임대료를 구분합니다.</p></article>
+  <article><div class="eyebrow">02 · 상권</div><h3>어떤 업종과 수요가 있나</h3><p>주변 점포 수, 공식 상권 추정매출, 길단위인구, 개·폐업과 공실을 각자의 범위로 표시합니다.</p></article>
+  <article><div class="eyebrow">03 · 입지·토지</div><h3>현장과 서류에서 뭘 볼까</h3><p>필지·용도지역·건축물과 교통·학군·생활시설·재해지도를 확인합니다.</p></article>
+</div>
+<nav class="toc" aria-label="보고서 목차"><a href="#prices">거래와 임대</a><a href="#business">상권 데이터</a><a href="#parcel">토지와 건축</a><a href="#location">생활권과 재해</a><a href="#delivery">화면·구현 순서</a></nav>
+
+<section class="section" id="prices">
+  <div class="eyebrow">01 · PRICES</div><h2>‘상권 거래가’를 세 가지로 구분합니다</h2>
+  <p>같은 장소에서도 <strong>부동산 매매 실거래</strong>, <strong>임대료·공실률 조사</strong>, <strong>점포 추정매출</strong>은 각각 다른 질문에 답합니다. 화면에서도 이 이름을 그대로 씁니다.</p>
+  <div class="scroll"><table class="table">
+    <thead><tr><th scope="col">화면 항목</th><th scope="col">공개 출처와 표시값</th><th scope="col">결합 기준과 해석</th></tr></thead>
+    <tbody>
+    <tr><th scope="row">같은 단지 매매</th><td>계약일·금액·층·전용면적, 비교 건수, 중앙값과 범위. <a href="https://www.data.go.kr/data/15126468/openapi.do?recommendDataYn=Y">국토부 아파트 매매 상세</a></td><td>법정동 5자리와 계약월로 조회합니다. 단지명만으로 합치지 않고 주소·단지 식별자와 전용면적을 맞춥니다. 최근 6개월부터 보고 해제 신고는 제외합니다. 층·동 차이와 거래가 오래된 경우를 표시합니다.</td></tr>
+    <tr><th scope="row">같은 단지 전월세</th><td>전세보증금과 월세 보증금·월 임대료, 계약일·면적. <a href="https://www.data.go.kr/data/15126474/openapi.do">국토부 아파트 전월세</a></td><td>전세와 월세를 별도 집계하고, 가능하면 신규와 갱신을 구분합니다. 비교의 보조 지표로 표시하며 현재 거주자의 보증금은 법원 서류에서 확인합니다.</td></tr>
+    <tr><th scope="row">주변 상가·업무용 매매</th><td>신고 매매 금액, 계약월, 용도·면적, 원/㎡ 중앙값과 표본. <a href="https://www.data.go.kr/data/15126463/openapi.do">국토부 상업업무용 매매</a></td><td>집합 상가와 건물 통매매, 상업용과 업무용을 분리합니다. 원/㎡의 면적 기준을 표시합니다. 지번 일부만 공개된 거래는 법정동 수준의 사례로 분리하고 지도 핀이나 반경 건수에서 제외합니다.</td></tr>
+    <tr><th scope="row">상가 임대료·공실</th><td>분기별 표본조사 임대료·임대가격지수·공실률. 오피스·중대형·소규모·집합상가를 구분. <a href="https://www.reb.or.kr/reb/cm/cntnts/cntntsView.do?cntntsId=1049&amp;mi=10335&amp;statId=S237220284">한국부동산원 조사 설명</a> · <a href="https://www.reb.or.kr/r-one/portal/openapi/openApiDevPage.do">R-ONE API</a></td><td>조사 상권 또는 시도 범위를 그대로 표시합니다. 상가 임대료는 1층 기준이며, 보증금 환산분을 포함한 임대가능면적당 값입니다. 확인한 국토부 공개 범위에서 상업·업무용은 매매 자료에 포함되며, 점포별 임대차 계약을 확인할 공개 API는 찾지 못했습니다. <a href="https://rt.molit.go.kr/pt/info/info.do">국토부 공개 범위</a></td></tr>
+    <tr><th scope="row">오피스텔 매매·임대</th><td>물건이 오피스텔인 경우에만 별도 화면을 구성합니다. <a href="https://www.data.go.kr/data/15126464/openapi.do">오피스텔 매매</a> · <a href="https://www.data.go.kr/data/15126475/openapi.do">오피스텔 전월세</a></td><td>공개 오피스텔 임대 계약을 상가나 일반 오피스 임대료의 대리값으로 사용하지 않습니다.</td></tr>
+    <tr><th scope="row">주변 토지 매매</th><td>계약일·금액·면적·지목, 원/㎡와 사례 수. <a href="https://www.data.go.kr/data/15126466/openapi.do">국토부 토지 매매</a></td><td>비슷한 지목·용도지역을 우선하고, 지분 거래는 구분합니다. 마스킹된 지번은 정확한 필지로 연결하지 않습니다.</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout"><strong>비교 카드 기본값</strong><p>최근 6개월 같은 단지·전용면적의 거래를 먼저 보여주고, 유효 표본이 3건 미만이면 ‘비교 사례 부족’으로 표시합니다. 3건은 페이지의 표시 기준입니다. 범위를 12개월이나 유사 면적으로 늘릴 때는 사용자가 선택하고 변경된 기준을 함께 표시합니다.</p></div>
+</section>
+
+<section class="section" id="business">
+  <div class="eyebrow">02 · COMMERCIAL DISTRICTS</div><h2>점포는 반경으로, 매출은 공식 상권으로</h2>
+  <div class="scroll"><table class="table">
+    <thead><tr><th scope="col">지역·범위</th><th scope="col">데이터와 출처</th><th scope="col">페이지에서의 용도</th></tr></thead>
+    <tbody>
+    <tr><th scope="row">전국 공통</th><td>상호·표준 업종·주소·좌표를 반경·다각형·행정동으로 조회. <a href="https://www.data.go.kr/data/15012005/openapi.do">소상공인시장진흥공단 상가업소 API</a> · <a href="https://www.data.go.kr/data/15083033/fileData.do">일괄 CSV</a></td><td>300·500·1,000m 직선반경 안의 편의점·마트·음식점 등 점포 수와 분포. 개별 영업 여부는 데이터 기준일과 함께 표시합니다.</td></tr>
+    <tr><th scope="row">서울</th><td>공식 상권 경계와 분기별 추정매출·점포·개폐업·길단위인구. 주거·직장인구, 배후지, 집객시설도 제공. <a href="https://golmok.seoul.go.kr/introduce.do">서울시 서비스 정의</a> · <a href="https://data.seoul.go.kr/dataList/OA-15560/S/1/datasetView.do">상권 영역</a> · <a href="https://data.seoul.go.kr/dataList/OA-15572/S/1/datasetView.do?tab=A">추정매출</a> · <a href="https://data.seoul.go.kr/dataList/OA-15568/S/1/datasetView.do?tab=A">길단위인구</a> · <a href="https://data.seoul.go.kr/dataList/OA-15577/S/1/datasetView.do">점포</a></td><td>상권 코드·분기·업종을 맞춥니다. 공식 상권과 배후지를 구분하고, 공급자의 공간 구획이나 지표 정의가 바뀐 시점에는 시계열을 점검합니다.</td></tr>
+    <tr><th scope="row">경기</th><td>31개 시군의 매출·인구·점포·개폐업 등 조회. <a href="https://sbiz.gmr.or.kr/">경기도시장상권진흥원 상권영향분석서비스</a></td><td>원문 조회를 연결합니다. 자동 수집이나 재표시에 쓸 공개 API와 이용 조건은 별도 확인이 필요합니다.</td></tr>
+    <tr><th scope="row">인천·전국</th><td>인천시가 연결하는 소상공인365의 매출추이·상권·업력·입지 분석. <a href="https://www.incheon.go.kr/eco/ECO030006">인천시 상권정보</a> · <a href="https://bigdata.sbiz.or.kr/">소상공인365</a></td><td>원문을 연결합니다. 서울의 추정매출과 같은 산식으로 가정하지 않고, 지표·공간 단위·시점이 일치하는 범위에서 비교합니다.</td></tr>
+    <tr><th scope="row">상주·직장 수요</th><td>인구·가구·사업체·종사자 및 경계 통계. <a href="https://sgis.kostat.go.kr/developer/html/openApi/api/intro.html">SGIS API</a> · <a href="https://jumin.mois.go.kr/">주민등록 인구통계</a></td><td>연간 또는 월간의 집계구·행정구역 수요 지표로 사용합니다. 주민등록 인구, 사업체 종사자, 시간대별 유동인구는 서로 다른 집계입니다.</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout"><strong>상권 카드 표시 범위</strong><p>반경 점포 수, 공식 상권의 분기별 추정매출, 한국부동산원 조사 상권의 임대료를 각각 표시합니다. 상권 매출 합계를 반경과 겹치는 면적 비율로 나누면 실제 반경 매출처럼 보일 수 있으므로 상권 원래 단위로 제공합니다.</p></div>
+</section>
+
+<section class="section" id="parcel">
+  <div class="eyebrow">03 · PARCEL AND BUILDING</div><h2>주소, 필지, 건물은 식별자가 다릅니다</h2>
+  <div class="scroll"><table class="table">
+    <thead><tr><th scope="col">지도·상세 항목</th><th scope="col">연동 데이터</th><th scope="col">표시 기준</th></tr></thead>
+    <tbody>
+    <tr><th scope="row">주소와 좌표</th><td>도로명·지번 주소 지오코딩. <a href="https://www.data.go.kr/data/15101106/openapi.do">국토부 VWorld 지오코더 2.0</a></td><td>좌표 정확도를 주소·단지·동네 수준으로 보관 또는 표시합니다. VWorld 지오코더 응답은 실시간 이용 조건이므로 지속 저장이 필요한 좌표는 별도 이용 가능 데이터원을 선정합니다.</td></tr>
+    <tr><th scope="row">필지와 지목</th><td>경계 지도, PNU, 지목과 공부상 면적. <a href="https://www.data.go.kr/data/15123899/openapi.do">연속지적도 WMS/WFS</a> · <a href="https://www.data.go.kr/data/15123884/openapi.do">토지임야 속성</a></td><td>WMS는 지도 표시, WFS는 도형과 속성 조회에 씁니다. PNU는 앞자리 0이 유지되도록 19자리 문자열로 다룹니다. 여러 필지에 걸친 물건은 관련 필지를 모두 확인합니다. 지도 경계는 측량 경계를 대신할 수 없습니다.</td></tr>
+    <tr><th scope="row">용도지역·계획</th><td>용도지역·지구·구역, 토지이용계획, 행위 제한과 고시. <a href="https://www.data.go.kr/data/15058773/openapi.do?recommendDataYn=Y">용도지역지구도</a> · <a href="https://www.data.go.kr/data/15123973/openapi.do">토지이용계획정보</a> · <a href="https://www.eum.go.kr/web/ar/lu/luLandDet.jsp">토지이음</a> · <a href="https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=15000000013">정부24 확인서</a></td><td>필지와 겹치는 항목과 조회일을 표시합니다. 계획 조회 결과는 현장 조건, 접도, 개별 인허가 판단과 구분합니다.</td></tr>
+    <tr><th scope="row">개별공시지가</th><td>필지별 공시기준일, 공시지가 원/㎡. <a href="https://www.data.go.kr/data/15124014/openapi.do">국토부 개별공시지가</a></td><td>공시 단가를 토지 매매 실거래가와 별도 항목으로 표시합니다.</td></tr>
+    <tr><th scope="row">건물과 단지</th><td>주용도·사용승인일·층·면적, 단지 세대수·시설·관리 정보. <a href="https://www.data.go.kr/data/15134735/openapi.do">건축HUB 건축물대장</a> · <a href="https://www.data.go.kr/data/15058453/openapi.do">K-apt 단지 기본정보</a> · <a href="https://www.data.go.kr/data/15106861/fileData.do?recommendDataYn=Y">공동주택 단지 식별정보</a></td><td>지번·건물·단지 식별자를 관리합니다. K-apt에 없는 단지에는 자료 미제공을 표시합니다. 등기 권리와 건물 상태는 별도 원문과 현장에서 확인합니다.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="section" id="location">
+  <div class="eyebrow">04 · NEIGHBORHOOD</div><h2>생활권과 재해 지도</h2>
+  <div class="scroll"><table class="table">
+    <thead><tr><th scope="col">레이어</th><th scope="col">공개 출처와 표시값</th><th scope="col">유의할 데이터 범위</th></tr></thead>
+    <tbody>
+    <tr><th scope="row">교통·도보</th><td>가까운 역과 노선, 버스 정류장, 확인된 역 출입구와 거리. <a href="https://www.data.go.kr/data/15013205/standard.do">전국 도시철도 역사</a> · <a href="https://www.data.go.kr/data/15098534/openapi.do">TAGO 정류소</a> · <a href="https://www.data.go.kr/data/15166820/fileData.do">인천·부천 지하철 출입구</a></td><td>역 중심점 직선거리와 출입구 도보경로를 구분합니다. 실제 도보분은 이용 조건에 맞는 경로 API가 확보된 경우에만 계산합니다.</td></tr>
+    <tr><th scope="row">학교·보육</th><td>학교·어린이집 위치, 초등학교 통학구역 도형. <a href="https://www.data.go.kr/data/15021148/standard.do">전국 학교 위치</a> · <a href="https://www.data.go.kr/data/15159265/fileData.do?recommendDataYn=Y">통학구역</a> · <a href="https://www.data.go.kr/data/15101189/openapi.do">어린이집 정보</a></td><td>가까운 학교와 배정 학교를 각각 표시합니다. 배정은 도형 기준일과 교육청 공고를 확인합니다.</td></tr>
+    <tr><th scope="row">생활 편의</th><td>병원·약국, 공원, 마트와 편의점. <a href="https://www.data.go.kr/data/15051059/fileData.do">건강보험심사평가원 병원·약국</a> · <a href="https://www.data.go.kr/data/15012890/standard.do">전국 도시공원</a> · <a href="https://www.data.go.kr/data/15012005/openapi.do">소상공인시장진흥공단 상가업소</a></td><td>직선반경과 데이터 기준일을 표시합니다. 공원 대표 좌표와 입구, 병원 등록 정보와 실제 운영시간을 구분합니다.</td></tr>
+    <tr><th scope="row">침수·산사태</th><td>하천·도시 침수 예상 시나리오, 과거 침수흔적, 산사태 위험등급. <a href="https://geo.floodmap.go.kr/intro">홍수위험지도</a> · <a href="https://www.safemap.go.kr/opna/data/dataViewRenew.do?objtId=212">생활안전지도 침수흔적</a> · <a href="https://sansatai.forest.go.kr/gis/ldmBrd.do">산림청 산사태위험지도</a></td><td>예상과 관측을 분리하고, 미제공 구역은 미확인으로 표시합니다. 침수흔적 WMS는 공공누리 4유형 조건이 있어 우선 원문으로 연결합니다.</td></tr>
+    <tr><th scope="row">소음·국가유산</th><td>측정소별 환경·철도·항공기 소음, 국가유산과 보호구역. <a href="https://www.noiseinfo.or.kr/">국가소음정보시스템</a> · <a href="https://gis-heritage.go.kr/helpAPI.do">국가유산공간정보 WMS/WFS</a></td><td>측정소 수치를 세대 실내 소음으로 환산하지 않습니다. 개발·이용 검토 시 문화유산 지정구역과 보호구역의 근거를 따로 확인합니다.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="section" id="delivery">
+  <div class="eyebrow">05 · IMPLEMENTATION</div><h2>페이지 적용 순서</h2>
+  <ol class="steps">
+    <li><strong>경매 물건과 아파트 실거래부터 연결</strong><p>법원·사건번호·물건번호에 매각기일과 회차를 붙여 기록합니다. 감정가와 최저가, 낙찰가를 별도 저장하고 유찰·변경·취하·매각 등 상태의 기준일을 표시합니다. 운영용 법원 경매 원자료는 이용 가능한 공급 경로를 먼저 확정합니다. 국토부 실거래 API는 법정동 코드 앞 5자리와 계약월 단위로 조회하고 서버에서 서비스키를 관리합니다. 초기 사례 데이터는 공식 CSV로도 확인할 수 있습니다. <a href="https://www.courtauction.go.kr/">법원경매정보</a> · <a href="https://rt.molit.go.kr/pt/xls/xls.do">국토부 자료제공</a></p></li>
+    <li><strong>주변 시세와 생활권 패널 추가</strong><p>아파트 매매·전월세, 상가 매매, 상권 임대료·공실, 상가업소 반경 수를 각각 카드로 구성합니다. 좌표가 확인된 거래만 거리순으로 비교하고 반경이 다른 시군구를 넘으면 함께 조회합니다. 동까지만 확인되는 거래는 동 단위 목록으로 표시합니다.</p></li>
+    <li><strong>상권 경계와 토지 레이어 추가</strong><p>서울 상권 영역에 물건 좌표를 공간 결합하고, 매출·점포·인구를 동일 분기와 상권 코드로 연결합니다. 다른 지역은 이용 가능한 공식 데이터부터 연결합니다. 행정동과 법정동, PNU와 상권 코드를 각각 보관합니다. 서울 상권 도형(EPSG:5181)과 물건 좌표(WGS84)는 같은 좌표계로 변환해 겹칩니다. <a href="https://data.seoul.go.kr/dataList/OA-15560/S/1/datasetView.do">서울 상권 도형</a></p></li>
+    <li><strong>A/B 비교에는 가정을 공개</strong><p>예산 우선이면 부대비용을 포함한 비교 총비용을, 거래가 대비 여유율 우선이면 같은 단지 거래 중앙값과 총비용의 차이를 비교합니다. 비교 거래가 적거나 인수 비용이 미확인이면 판단을 보류합니다. 상권 매출과 유동인구는 맥락으로 제공하고 경매 물건의 우열 점수에는 섞지 않습니다.</p></li>
+  </ol>
+  <div class="callout"><strong>숫자마다 함께 표시할 항목</strong><p>출처 · 계약일 또는 기준분기 · 마지막 조회일 · 표본 수 · 공간 범위 · 위치 정확도. ‘자료 미제공’, ‘조건에 맞는 거래 0건’, ‘공개 범위 밖’은 각각 표시합니다.</p></div>
+  <div class="callout"><strong>API 연결에 필요한 것</strong><p>국토부·상가업소는 공공데이터포털 활용신청과 서비스키, R-ONE은 발급키와 통계표 코드를 사용하며 브라우저 교차 출처 호출을 지원하지 않아 서버나 파일로 연동합니다. VWorld·SGIS는 별도 등록과 서비스별 키 또는 토큰, 허용 도메인과 이용 조건을 확인합니다. 운영 전에 요청량과 갱신 주기, 재배포 조건을 공급자별로 정합니다. <a href="https://www.reb.or.kr/r-one/portal/openapi/openApiDevPage.do">R-ONE 개발 안내</a> · <a href="https://www.vworld.kr/dev/v4dv_apikey_s001.do">VWorld 인증키</a> · <a href="https://sgis.kostat.go.kr/developer/html/openApi/api/intro.html">SGIS 개발 안내</a></p></div>
+</section>
+<footer class="footer">
+  <p>현재 입찰랩은 2026년 7~10월 월간 집계와 수동 확인한 공개 경매 물건과 낙찰 사례를 사용합니다. 지도는 과거 시도·시군구 경계와 동네 기준 핀을 표시합니다.</p>
+  <p>보고서의 주변 거래·상권·필지 레이어는 연동 설계입니다. <a href="/">입찰랩 경매 페이지로 돌아가기</a></p>
+</footer>
+</main>
+</body>
+</html>

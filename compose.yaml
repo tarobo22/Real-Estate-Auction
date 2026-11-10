@@ -1,0 +1,35 @@
+services:
+  db:
+    image: postgis/postgis:17-3.6
+    environment:
+      POSTGRES_DB: auction_lab
+      POSTGRES_PASSWORD: ${AUCTION_DB_ADMIN_PASSWORD:?Set AUCTION_DB_ADMIN_PASSWORD}
+      AUCTION_DB_PASSWORD: ${AUCTION_DB_PASSWORD:?Set AUCTION_DB_PASSWORD}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./deploy/init-db.sh:/docker-entrypoint-initdb.d/20-auction.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U postgres -d auction_lab"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  web:
+    build: .
+    environment:
+      AUCTION_SECRET_KEY: ${AUCTION_SECRET_KEY:?Set AUCTION_SECRET_KEY}
+      AUCTION_ALLOWED_HOSTS: ${AUCTION_ALLOWED_HOSTS:-localhost,127.0.0.1}
+      AUCTION_HTTPS: ${AUCTION_HTTPS:-0}
+      AUCTION_KAKAO_MAP_JS_KEY: ${AUCTION_KAKAO_MAP_JS_KEY:-}
+      AUCTION_DB_HOST: db
+      AUCTION_DB_PASSWORD: ${AUCTION_DB_PASSWORD:?Set AUCTION_DB_PASSWORD}
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:${AUCTION_PORT:-8000}:8000"
+    restart: unless-stopped
+
+volumes:
+  db-data:

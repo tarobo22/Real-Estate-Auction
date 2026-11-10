@@ -1,0 +1,7 @@
+<div class="search-query">
+  <label for="{{ filter.q.id_for_label }}">검색어</label>
+  {{ filter.q }}{{ filter.q.errors }}
+</div>
+<div class="field"><label for="{{ filter.region.id_for_label }}">지역</label>{{ filter.region }}{{ filter.region.errors }}</div>
+<div class="field"><label for="{{ filter.use.id_for_label }}">용도</label>{{ filter.use }}{{ filter.use.errors }}</div>
+<div class="field"><label for="{{ filter.budget.id_for_label }}">최대 가격 (만원)</label>{{ filter.budget }}{{ filter.budget.errors }}</div>

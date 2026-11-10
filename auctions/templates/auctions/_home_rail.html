@@ -1,0 +1,31 @@
+{% load static %}
+<section class="section" aria-labelledby="home-{{ rail }}">
+  <div class="section-heading">
+    <h2 id="home-{{ rail }}">{{ title }}</h2>
+    <div class="rail-actions">
+      <button type="button" data-rail="{{ rail }}-rail" data-step="-1" aria-label="이전 매물">‹</button>
+      <button type="button" data-rail="{{ rail }}-rail" data-step="1" aria-label="다음 매물">›</button>
+      <a href="{% url 'auctions:map' %}?kind={{ rail }}">더 보기 ›</a>
+    </div>
+  </div>
+  <div class="rail" id="{{ rail }}-rail" tabindex="0" aria-label="{{ title }} 목록">
+    {% for lot, photo in lots %}
+      <a class="home-lot" href="{% url 'auctions:detail' lot.public_id %}">
+        <div class="home-lot-media">
+          <img src="{% static photo %}" alt="" loading="lazy" decoding="async">
+          <span>예시 사진</span>
+        </div>
+        <div class="home-lot-content">
+          <p class="lot-meta"><span class="pill">{% if rail == 'upcoming' %}입찰 예정{% else %}낙찰 사례{% endif %}</span> {{ lot.region }} {{ lot.district }}</p>
+          <h3>{{ lot.name }}</h3>
+          <p>{{ lot.price_label }} <strong>{{ lot.display_price }}</strong></p>
+          <p>{{ lot.use }}{% if lot.area %} · 전용 {{ lot.area|floatformat:"-4" }}㎡{% endif %}{% if rail == 'upcoming' and lot.failed != None %} · 유찰 {{ lot.failed }}회{% endif %}</p>
+          <p>{% if rail == 'upcoming' %}매각기일 {{ lot.auction_date|date:"n월 j일" }}{% else %}낙찰 {{ lot.sale_date|date:"n월 j일" }}{% endif %}</p>
+        </div>
+      </a>
+    {% empty %}
+      <p>표시할 공개 사례가 없습니다.</p>
+    {% endfor %}
+  </div>
+  {% if rail == 'upcoming' %}<p class="muted">{{ snapshot|date:"Y.m.d" }} 확인 · 기일과 가격은 법원 원문에서 확인하세요.</p>{% endif %}
+</section>

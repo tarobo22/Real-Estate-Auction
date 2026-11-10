@@ -5,6 +5,7 @@
       <span>{{ lot.address }} · {{ lot.use }}</span>
       <span>{{ lot.price_label }} <b>{{ lot.display_price }}</b></span>
     </a>
+    {% include 'auctions/_cart_button.html' %}
   </article>
 {% empty %}
   <p>조건에 맞는 물건이 없습니다. <a href="{% url 'auctions:map' %}">필터 초기화</a></p>

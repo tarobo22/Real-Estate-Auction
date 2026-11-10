@@ -16,11 +16,18 @@
       <nav aria-label="주 메뉴">
         <a href="{% url 'auctions:home' %}"{% if active == 'home' %} aria-current="page"{% endif %}>경매 홈</a>
         <a href="{% url 'auctions:map' %}"{% if active == 'map' %} aria-current="page"{% endif %}>매물 지도</a>
+        <a href="{% url 'auctions:results' %}"{% if active == 'results' %} aria-current="page"{% endif %}>낙찰</a>
         {% block nav %}{% endblock %}
       </nav>
+      <a id="cart-opener" class="button" href="{% url 'auctions:cart' %}" aria-haspopup="dialog">장바구니 <span data-cart-count>{{ cart_count }}</span>건</a>
     </div>
   </header>
   <main class="shell main" id="main">{% block content %}{% endblock %}</main>
+  <dialog id="site-cart" class="detail-dialog cart-dialog" aria-labelledby="site-cart-title">
+    <div class="section-heading"><h2 id="site-cart-title">장바구니</h2><form method="dialog"><button data-close-cart>닫기</button></form></div>
+    <div data-cart-content>{% include 'auctions/_cart_contents.html' %}</div>
+  </dialog>
+  <div id="cart-notice" class="sr-only" role="status"></div>
   <footer class="site-footer">
     <div class="shell footer-row">
       <strong>입찰랩</strong>
@@ -28,6 +35,7 @@
       <a href="{% url 'auctions:location-report' %}">입지 데이터 보고서</a>
     </div>
   </footer>
+  <script defer src="{% static 'auctions/cart.js' %}"></script>
   {% block scripts %}{% endblock %}
 </body>
 </html>

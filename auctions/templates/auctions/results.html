@@ -1,0 +1,46 @@
+{% extends 'auctions/base.html' %}
+{% block title %}낙찰 · 입찰랩{% endblock %}
+{% block content %}
+  <h1>낙찰</h1>
+  <p class="muted">진행중은 서울 시간 기준 미래 기일입니다. 당일과 지난 기일은 결과가 확인되기 전까지 낙찰대기로 표시됩니다.</p>
+  <nav class="status-tabs" aria-label="낙찰 상태">
+    {% for value, label in statuses %}
+      <a class="button" href="?status={{ value }}"{% if value == status %} aria-current="page"{% endif %}>{{ label }}</a>
+    {% endfor %}
+  </nav>
+  <details class="panel filter-panel"{% if request.GET|length > 1 %} open{% endif %}>
+    <summary>가격·지역 필터</summary>
+    <form class="filter-grid" action="{% url 'auctions:results' %}" method="get">
+      <input type="hidden" name="status" value="{{ status }}">
+      {{ filter.non_field_errors }}
+      {% for field in filter %}
+        {% if field.name != 'status' and field.name != 'min_rate' and field.name != 'max_rate' %}
+          <div class="field">{{ field.label_tag }}{{ field }}{{ field.errors }}</div>
+        {% endif %}
+      {% endfor %}
+      {% if status == 'sold' %}
+        <div class="field">{{ filter.min_rate.label_tag }}{{ filter.min_rate }}{{ filter.min_rate.errors }}</div>
+        <div class="field">{{ filter.max_rate.label_tag }}{{ filter.max_rate }}{{ filter.max_rate.errors }}</div>
+      {% endif %}
+      <button type="submit" class="button primary">적용</button>
+      <a href="?status={{ status }}">초기화</a>
+    </form>
+  </details>
+  <div class="results-list">
+    {% for lot in lots %}
+      <article class="panel result-row">
+        <div>
+          <p class="muted">{{ lot.address }} · {{ lot.use }}</p>
+          <h2><a href="{% url 'auctions:detail' lot.public_id %}">{{ lot.name }}</a></h2>
+          <p>{{ lot.price_label }} <strong>{{ lot.display_price }}</strong></p>
+          {% if status == 'sold' %}
+            <p>낙찰일 {{ lot.sale_date|date:"Y.m.d"|default:"미수록" }} · 낙찰가율 {% if lot.rate != None %}{{ lot.rate|floatformat:1 }}%{% else %}미확인{% endif %}</p>
+          {% else %}<p>매각기일 {{ lot.auction_date|date:"Y.m.d"|default:"미수록" }}</p>{% endif %}
+        </div>
+        {% include 'auctions/_cart_button.html' %}
+      </article>
+    {% empty %}
+      <p>조건에 맞는 물건이 없습니다. <a href="?status={{ status }}">필터 초기화</a></p>
+    {% endfor %}
+  </div>
+{% endblock %}

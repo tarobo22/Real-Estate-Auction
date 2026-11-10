@@ -1,0 +1,6 @@
+{% extends 'auctions/base.html' %}
+{% block title %}장바구니 · 입찰랩{% endblock %}
+{% block content %}
+  <h1>장바구니</h1>
+  <section class="panel detail-page" data-cart-content>{% include 'auctions/_cart_contents.html' %}</section>
+{% endblock %}

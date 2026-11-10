@@ -1,0 +1,23 @@
+{% if cart_rows %}
+  <form method="post" action="{% url 'auctions:cart' %}" data-cart-form>
+    {% csrf_token %}
+    <button name="action" value="clear">전체 비우기</button>
+  </form>
+  <ul class="cart-list">
+    {% for item in cart_rows %}
+      {% with lot=item.lot %}
+        <li>
+          <a href="{% url 'auctions:detail' lot.public_id %}">
+            <strong>{{ lot.name }}</strong>
+            <span>{{ lot.address }} · {{ lot.use }}</span>
+            <span>{{ lot.price_label }} {{ lot.display_price }}</span>
+          </a>
+          {% include 'auctions/_cart_button.html' with cart_remove=True %}
+        </li>
+      {% endwith %}
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>아직 담은 매물이 없어요.</p>
+  <a href="{% url 'auctions:map' %}">매물 지도 열기</a>
+{% endif %}

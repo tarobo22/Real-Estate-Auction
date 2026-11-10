@@ -2,6 +2,7 @@
   <p class="eyebrow">{{ lot.address }} · {{ lot.use }}</p>
   <h2>{{ lot.name }}</h2>
   <p>{{ lot.price_label }} <strong class="detail-price">{{ lot.display_price }}</strong></p>
+  {% include 'auctions/_cart_button.html' %}
   <dl class="detail-grid">
     <div><dt>사건번호</dt><dd>{{ lot.case_label|default:"미수록" }}</dd></div>
     <div><dt>매각기일</dt><dd>{{ lot.auction_date|date:"Y.m.d"|default:"미수록" }}</dd></div>
@@ -11,6 +12,10 @@
     {% if lot.area %}<div><dt>전용면적</dt><dd>{{ lot.area|floatformat:"-4" }}㎡</dd></div>{% endif %}
     {% if lot.checked_on %}<div><dt>자료 확인일</dt><dd>{{ lot.checked_on|date:"Y.m.d" }}</dd></div>{% endif %}
   </dl>
+  {% if lot.events.all %}
+    <h3>사건 이력</h3>
+    <ul>{% for event in lot.events.all %}<li>{{ event.occurred_on|date:"Y.m.d" }} · {{ event.get_kind_display }}{% if event.note %} · {{ event.note }}{% endif %}</li>{% endfor %}</ul>
+  {% endif %}
   {% if lot.court_url %}
     <a href="{{ lot.court_url }}" target="_blank" rel="noopener noreferrer">법원 원문 열기 ↗</a>
   {% else %}

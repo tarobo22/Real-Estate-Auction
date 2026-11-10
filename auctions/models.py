@@ -141,3 +141,32 @@ class ComparableSale(models.Model):
     @property
     def display_price(self):
         return won_label(self.price)
+
+
+class AuctionEvent(models.Model):
+    class Kind(models.TextChoices):
+        SCHEDULED = "scheduled", "기일 공고"
+        RESCHEDULED = "rescheduled", "기일 변경"
+        FAILED = "failed", "유찰"
+        SOLD = "sold", "낙찰"
+        UNPAID = "unpaid", "미납"
+        WITHDRAWN = "withdrawn", "취하"
+
+    lot = models.ForeignKey(AuctionLot, on_delete=models.CASCADE, related_name="events")
+    kind = models.CharField(max_length=16, choices=Kind)
+    occurred_on = models.DateField()
+    note = models.TextField(blank=True)
+
+    class Meta:
+        ordering = ["-occurred_on", "-pk"]
+        constraints = [models.UniqueConstraint(
+            fields=["lot", "kind", "occurred_on"], name="auction_unique_lot_event",
+        )]
+
+
+class CartItem(models.Model):
+    session = models.ForeignKey("sessions.Session", on_delete=models.CASCADE)
+    lot = models.ForeignKey(AuctionLot, on_delete=models.CASCADE)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["session", "lot"], name="auction_unique_cart_lot")]

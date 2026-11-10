@@ -128,6 +128,20 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .detail-grid div { padding: .6rem; background: var(--bg); border-radius: 7px; }
 .detail-grid dt { color: var(--muted); }
 .detail-grid dd { margin: .25rem 0 0; font-weight: 660; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.status-tabs { display: flex; gap: .45rem; flex-wrap: wrap; margin-block: .9rem; }
+.status-tabs a[aria-current] { background: var(--green); color: white; }
+.filter-panel { padding: .8rem; }
+.filter-panel summary { cursor: pointer; font-weight: 680; }
+.results-list { display: grid; gap: .65rem; margin-block-start: 1rem; }
+.result-row { display: flex; justify-content: space-between; align-items: start; gap: .7rem; padding: 1rem; flex-wrap: wrap; }
+.result-row h2 { font-size: 1.2rem; }
+.map-row form, .lot-detail form { margin-block: .4rem; }
+.map-row button, .cart-list button { padding: .3rem .5rem; font-size: .86rem; }
+.cart-dialog { position: fixed; inset: 0 0 0 auto; height: 100dvh; max-height: 100dvh; width: min(420px, 100%); margin: 0; }
+.cart-list { list-style: none; padding: 0; }
+.cart-list li { display: flex; justify-content: space-between; align-items: center; gap: .5rem; border-block-start: 1px solid var(--line); padding: .7rem 0; }
+.cart-list li a { display: grid; text-decoration: none; }
 @media (max-width: 720px) {
   .site-header { position: sticky; top: 0; z-index: 3; }
   .header-row { min-height: 54px; }
@@ -138,4 +152,5 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   .map-panel { grid-row: 1; }
   .map-list-content { max-height: 45vh; }
   .home-lot { flex-basis: min(84%, 360px); }
+  .cart-dialog { inset: auto 0 0; width: 100%; height: auto; max-height: 78dvh; }
 }

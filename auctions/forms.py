@@ -51,3 +51,33 @@ class BoundsForm(forms.Form):
             raise forms.ValidationError("가로·세로 각각 30km 이하로 지도를 확대해 주세요.", code="extent")
         values["bbox"] = west, south, east, north
         return values
+
+
+class ResultsFilter(forms.Form):
+    STATUS_CHOICES = [("upcoming", "진행중"), ("pending", "낙찰대기"), ("sold", "완료"), ("undated", "기일 미상")]
+    status = forms.ChoiceField(choices=STATUS_CHOICES, required=False)
+    region = forms.ChoiceField(choices=[("", "전체 지역"), *Region.choices], required=False, label="지역")
+    use = forms.ChoiceField(choices=[("", "전체 용도"), *LotUse.choices], required=False, label="용도")
+    min_price = forms.DecimalField(required=False, min_value=0, max_digits=14, decimal_places=4, label="최소 가격 (만원)")
+    max_price = forms.DecimalField(required=False, min_value=0, max_digits=14, decimal_places=4, label="최대 가격 (만원)")
+    min_rate = forms.DecimalField(required=False, min_value=0, max_digits=9, decimal_places=2, label="최소 낙찰가율 (%)")
+    max_rate = forms.DecimalField(required=False, min_value=0, max_digits=9, decimal_places=2, label="최대 낙찰가율 (%)")
+    sort = forms.ChoiceField(required=False, choices=[
+        ("", "기일·낙찰일"), ("price-low", "낮은 가격"), ("price-high", "높은 가격"),
+    ], label="정렬")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.data.get("status") != "sold":
+            for name in ("min_rate", "max_rate"):
+                self.fields[name].disabled = True
+
+    def clean_status(self):
+        return self.cleaned_data["status"] or "upcoming"
+
+    def clean(self):
+        values = super().clean()
+        for low, high in (("min_price", "max_price"), ("min_rate", "max_rate")):
+            if values.get(low) is not None and values.get(high) is not None and values[low] > values[high]:
+                self.add_error(high, "최댓값은 최솟값 이상이어야 합니다.")
+        return values

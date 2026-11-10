@@ -1,8 +1,8 @@
 from datetime import date, timedelta
 
 from django.contrib.gis.geos import Polygon
-from django.db.models import Case, F, Q, Value, When
-from django.db.models.functions import Replace
+from django.db.models import Case, DecimalField, F, Q, Value, When
+from django.db.models.functions import Cast, NullIf, Replace
 
 from .models import AuctionLot
 
@@ -69,3 +69,35 @@ def map_lots(filters, bbox=None, as_of=SNAPSHOT_DATE):
 def page_lots(queryset):
     rows = list(queryset[:MAP_LIMIT + 1])
     return rows[:MAP_LIMIT], len(rows) > MAP_LIMIT
+
+
+def result_lots(filters, day):
+    status = filters["status"]
+    lots = AuctionLot.objects.all()
+    sold = status == "sold"
+    if sold:
+        lots = lots.filter(bid__isnull=False).annotate(
+            rate=Cast(F("bid"), DecimalField(max_digits=25, decimal_places=4)) * 100 / NullIf(F("appraisal"), 0),
+        )
+    else:
+        date_filter = {
+            "upcoming": Q(auction_date__gt=day),
+            "pending": Q(auction_date__lte=day),
+            "undated": Q(auction_date__isnull=True),
+        }[status]
+        lots = lots.filter(date_filter, bid__isnull=True)
+    for field in ("region", "use"):
+        if filters[field]:
+            lots = lots.filter(**{field: filters[field]})
+    price = "bid" if sold else "minimum"
+    for bound, comparison in (("min", "gte"), ("max", "lte")):
+        if (amount := filters[f"{bound}_price"]) is not None:
+            lots = lots.filter(**{f"{price}__{comparison}": int(amount * 10_000)})
+        if sold and (rate := filters[f"{bound}_rate"]) is not None:
+            lots = lots.filter(**{f"rate__{comparison}": rate})
+    date_order = F("sale_date").desc(nulls_last=True) if sold else F("auction_date").asc(nulls_last=True)
+    ordering = {
+        "price-low": [F(price).asc(nulls_last=True)],
+        "price-high": [F(price).desc(nulls_last=True)],
+    }.get(filters["sort"], [])
+    return lots.order_by(*ordering, date_order, "public_id")

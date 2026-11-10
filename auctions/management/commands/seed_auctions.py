@@ -8,7 +8,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.core.validators import URLValidator
 from django.db import transaction
 
-from auctions.models import AuctionLot, ComparableSale
+from auctions.models import AuctionEvent, AuctionLot, ComparableSale
 from auctions.queries import SNAPSHOT_DATE
 
 
@@ -66,6 +66,10 @@ class Command(BaseCommand):
                 source_key=sources[0],
                 defaults=values,
                 create_defaults={"public_id": row["id"], **values},
+            )
+            AuctionEvent.objects.update_or_create(
+                lot=lot, kind=AuctionEvent.Kind.SOLD if sale else AuctionEvent.Kind.SCHEDULED,
+                occurred_on=day, defaults={"note": row.get("status", "")},
             )
             lot.comparable_sales.all().delete()
             ComparableSale.objects.bulk_create([

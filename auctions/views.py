@@ -75,7 +75,7 @@ def safe_return(request):
 
 @require_safe
 def lot_detail(request, public_id):
-    lot = AuctionLot.objects.prefetch_related("comparable_sales").filter(public_id=public_id).first()
+    lot = AuctionLot.objects.prefetch_related("comparable_sales", "events").filter(public_id=public_id).first()
     context = {"active": "map", "return_to": safe_return(request)}
     if lot is None:
         return render(request, "auctions/not_found.html", context, status=404)

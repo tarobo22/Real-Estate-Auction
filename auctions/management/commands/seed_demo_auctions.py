@@ -1,5 +1,6 @@
 from datetime import timedelta
 from decimal import Decimal
+from itertools import product
 
 from django.core.management.base import BaseCommand
 from django.db import transaction
@@ -32,28 +33,38 @@ PROPERTY_TYPES = (
     ("land", LotUse.LAND, 90_000_000, ("155.00", "310.00", "560.00"), (None, None, None)),
 )
 
+DEMO_SETS = 4
+DEMO_COUNT = DEMO_SETS * len(DISTRICTS) * len(PROPERTY_TYPES)
+
 
 class Command(BaseCommand):
-    help = "입찰랩에 가상 시연 매물 60건을 적재합니다."
+    help = f"입찰랩에 가상 시연 매물 {DEMO_COUNT}건을 적재합니다."
 
     @transaction.atomic
     def handle(self, *args, **options):
-        for district_index, (district_key, region, district, lat, lon, premium) in enumerate(DISTRICTS):
+        for set_index, (district_index, district_data) in product(range(DEMO_SETS), enumerate(DISTRICTS)):
+            district_key, region, district, lat, lon, premium = district_data
+            # The first set keeps the public IDs and source keys of the existing demo.
+            suffix = f"-{set_index + 1:02d}" if set_index else ""
+            name_suffix = suffix.replace("-", " ")
+            coordinate_offset = Decimal("0.0003") * set_index
             for type_index, (type_key, use, base_price, areas, floors) in enumerate(PROPERTY_TYPES):
-                variant = (district_index + type_index) % 3
-                sold = (district_index + type_index) % len(PROPERTY_TYPES) < 2
+                mix = district_index + type_index + set_index
+                variant = mix % len(areas)
+                sold = mix % len(PROPERTY_TYPES) < 2
                 sequence = district_index * len(PROPERTY_TYPES) + type_index
-                day_offset = -5 - sequence * 2 if sold else 2 + sequence * 2
+                date_shift = sequence * 2 + set_index * 3
+                day_offset = -5 - date_shift if sold else 2 + date_shift
                 occurred_on = SNAPSHOT_DATE + timedelta(days=day_offset)
-                appraisal = base_price + premium + 12_000_000 * variant
+                appraisal = base_price + premium + 12_000_000 * variant + 5_000_000 * set_index
                 minimum = appraisal * (100, 80, 64)[variant] // 100
                 bid = minimum + (appraisal - minimum) // 3 + 3_000_000 if sold else None
                 values = {
-                    "name": f"[시연] {district} {use}",
+                    "name": f"[시연] {district} {use}{name_suffix}",
                     "region": region,
                     "district": district,
                     "use": use,
-                    "case_number": f"DEMO-{district_index + 1:02d}-{type_index + 1:02d}",
+                    "case_number": f"DEMO-{district_index + 1:02d}-{type_index + 1:02d}{suffix}",
                     "auction_date": None if sold else occurred_on,
                     "sale_date": occurred_on if sold else None,
                     "appraisal": appraisal,
@@ -62,13 +73,13 @@ class Command(BaseCommand):
                     "area": Decimal(areas[variant]),
                     "floor": floors[variant],
                     "failed": variant,
-                    "latitude": Decimal(lat) + Decimal("0.001") * (type_index - 2),
-                    "longitude": Decimal(lon) + Decimal("0.002") * (type_index - 2),
+                    "latitude": Decimal(lat) + Decimal("0.001") * (type_index - 2) + coordinate_offset,
+                    "longitude": Decimal(lon) + Decimal("0.002") * (type_index - 2) - coordinate_offset,
                 }
                 lot, _ = AuctionLot.objects.update_or_create(
-                    source_key=f"{DEMO_SOURCE_PREFIX}{district_key}:{type_key}",
+                    source_key=f"{DEMO_SOURCE_PREFIX}{district_key}:{type_key}{suffix}",
                     defaults=values,
-                    create_defaults={"public_id": f"demo-{district_key}-{type_key}", **values},
+                    create_defaults={"public_id": f"demo-{district_key}-{type_key}{suffix}", **values},
                 )
                 AuctionEvent.objects.update_or_create(
                     lot=lot,
@@ -76,6 +87,4 @@ class Command(BaseCommand):
                     occurred_on=occurred_on,
                     defaults={"note": "시연 데이터"},
                 )
-        self.stdout.write(self.style.SUCCESS(
-            f"시연 매물 {len(DISTRICTS) * len(PROPERTY_TYPES)}건을 적재했습니다."
-        ))
+        self.stdout.write(self.style.SUCCESS(f"시연 매물 {DEMO_COUNT}건을 적재했습니다."))

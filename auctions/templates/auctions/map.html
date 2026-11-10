@@ -1,48 +1,82 @@
 {% extends 'auctions/base.html' %}
 {% load static %}
 {% block title %}매물 지도 · 입찰랩{% endblock %}
+{% block page_styles %}<link rel="stylesheet" href="{% static 'auctions/map.css' %}"><link rel="stylesheet" href="{% static 'auctions/detail.css' %}">{% endblock %}
 {% block content %}
-  <h1>매물 지도</h1>
-  <form id="map-filters" class="filter-grid" action="{% url 'auctions:map' %}" method="get">
-    {% include 'auctions/_search_fields.html' %}
-    <div class="field"><label for="{{ filter.kind.id_for_label }}">상태</label>{{ filter.kind }}{{ filter.kind.errors }}</div>
-    {% if sold_view %}
-      <div class="field">{{ filter.sale_date.label_tag }}{{ filter.sale_date }}{{ filter.sale_date.errors }}</div>
-    {% else %}
-      <div class="field">{{ filter.days.label_tag }}{{ filter.days }}{{ filter.days.errors }}</div>
-    {% endif %}
-    <button class="button primary" type="submit">조건 적용</button>
-    <a href="{% url 'auctions:map' %}">전체 조건 초기화</a>
-  </form>
+<div class="map-page">
+  <header class="map-header">
+    <h1>매물 지도</h1>
+    <form id="map-filters" action="{% url 'auctions:map' %}" method="get" aria-label="경매 물건 검색 조건">
+      <div class="map-query">
+        <label class="sr-only" for="{{ filter.q.id_for_label }}">검색어</label>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6"/><path d="m15 15 5 5"/></svg>
+        {{ filter.q }}
+        <button class="button primary" type="submit">검색</button>
+      </div>
+      <label class="sr-only" for="{{ filter.region.id_for_label }}">지역</label>{{ filter.region }}
+      <label class="sr-only" for="{{ filter.use.id_for_label }}">용도</label>{{ filter.use }}
+      <label class="sr-only" for="{{ filter.budget.id_for_label }}">가격 상한</label>{{ filter.budget }}
+      <label class="sr-only" for="{{ filter.kind.id_for_label }}">경매 상태</label>{{ filter.kind }}
+      {% if sold_view %}
+        <label class="sr-only" for="{{ filter.sale_date.id_for_label }}">낙찰일</label>{{ filter.sale_date }}
+      {% else %}
+        <label class="sr-only" for="{{ filter.days.id_for_label }}">예정 기일</label>{{ filter.days }}
+      {% endif %}
+      {% if filter.errors %}
+        <div class="map-filter-errors" role="alert">
+          {% for field in filter %}{{ field.errors }}{% endfor %}
+          {{ filter.non_field_errors }}
+        </div>
+      {% endif %}
+    </form>
+  </header>
   <div class="map-layout" id="map-app" data-api="{% url 'auctions:map-api' %}"
        data-boundaries="{% static 'auctions/boundaries.json' %}" data-kakao-key="{{ kakao_key }}">
-    <details class="panel map-list" id="map-list" open>
-      <summary>매물 목록</summary>
-      <div class="map-list-content">
-        <p id="map-status" role="status">{{ lots|length }}건{% if truncated %} · 100건까지만 표시{% endif %}</p>
-        <button type="button" id="map-all" hidden>묶음 선택 해제</button>
-        <a href="{{ return_to }}" id="map-clear-range" hidden>지도 범위 해제</a>
+    <details class="map-list" id="map-list" open>
+      <summary class="map-sheet-summary">
+        <span class="map-sheet-grip" aria-hidden="true"></span>
+        <span>매물 목록 <strong id="map-sheet-count">{{ lots|length }}건</strong></span>
+        <span class="map-sheet-action">
+          <span class="map-sheet-expand">목록 보기</span><span class="map-sheet-collapse">목록 접기</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 15 6-6 6 6"/></svg>
+        </span>
+      </summary>
+      <div class="map-list-content" aria-label="매물 목록">
+        <div class="map-list-toolbar">
+          <p id="map-status" role="status">{{ lots|length }}건{% if truncated %} · 100건까지만 표시{% endif %}</p>
+          <button type="button" id="map-all" hidden>묶음 선택 해제</button>
+          <a href="{{ return_to }}" id="map-clear-range" hidden>지도 범위 해제</a>
+          <a class="map-reset-filters" href="{% url 'auctions:map' %}">조건 초기화</a>
+        </div>
         <div id="map-rows">{% include 'auctions/_map_rows.html' %}</div>
+        <p class="map-list-caption">{{ snapshot|date:"Y.m.d" }} 확인 · 기일과 매각 조건은 법원 원문 확인</p>
       </div>
     </details>
-    <section class="panel map-panel" aria-label="수도권 지도">
-      <div class="map-tools">
-        <strong id="map-provider">행정구역 지도</strong>
-        <button type="button" id="zoom-in" aria-label="지도 확대">+</button>
-        <button type="button" id="zoom-out" aria-label="지도 축소">−</button>
-        <button type="button" id="zoom-reset" aria-label="지도 초기화">초기화</button>
-      </div>
-      <div class="map-viewport">
+    <section class="map-panel" aria-label="수도권 지도">
+      <div class="map-viewport" tabindex="-1" role="group" aria-label="매물 위치 지도">
         <svg id="fallback-map" viewBox="0 0 640 440" role="group" aria-label="수도권 행정구역과 매물" tabindex="0">
           <g id="boundary-layer"></g><g id="pin-layer"></g>
         </svg>
         <div id="kakao-map" hidden></div>
-        <button type="button" id="map-search" class="button primary" disabled>이 지도에서 찾기</button>
+        <div class="map-toolbar">
+          <strong id="map-provider">행정구역 지도</strong>
+          <button type="button" id="map-search" aria-describedby="map-hint" disabled>이 지도에서 찾기</button>
+        </div>
+        <div class="map-tools" aria-label="지도 조작">
+          <div>
+            <button type="button" id="zoom-in" aria-label="지도 확대">+</button>
+            <button type="button" id="zoom-out" aria-label="지도 축소">−</button>
+          </div>
+          <button type="button" id="zoom-reset" aria-label="지도 초기화" title="지도 초기화">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/><path d="M12 2v4m0 12v4M2 12h4m12 0h4"/></svg>
+          </button>
+        </div>
+        <p class="map-credit">핀은 동네 기준 · 경계는 간소화한 <a href="https://www.geoboundaries.org/">geoBoundaries</a> / Natural Earth / citypopulation.de 자료 · <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a></p>
       </div>
-      <p class="muted" id="map-hint">가로·세로 각각 30km 이내로 확대하면 이 지도에서 검색할 수 있습니다.</p>
-      <p class="muted map-credit">핀은 동네 기준 · 경계는 간소화한 <a href="https://www.geoboundaries.org/">geoBoundaries</a> / Natural Earth / citypopulation.de 자료 · <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a></p>
+      <p class="sr-only" id="map-hint">가로·세로 각각 30km 이내로 확대하면 이 지도에서 검색할 수 있습니다.</p>
     </section>
   </div>
+</div>
   <dialog class="detail-dialog" id="lot-dialog" aria-labelledby="dialog-title">
     <div class="section-heading"><h2 id="dialog-title">매물 상세</h2><form method="dialog"><button aria-label="상세 닫기">닫기</button></form></div>
     <div id="lot-fragment"></div>

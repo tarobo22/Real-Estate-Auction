@@ -1,52 +1,87 @@
 {% extends 'auctions/base.html' %}
 {% load static %}
 {% block title %}AI 브리핑 · 입찰랩{% endblock %}
+{% block page_styles %}<link rel="stylesheet" href="{% static 'auctions/briefing.css' %}">{% endblock %}
 {% block content %}
-  <div class="section-heading">
-    <h1>AI 브리핑</h1>
-    <a href="{% url 'auctions:briefing' %}?scope={{ scope }}">새 대화</a>
-  </div>
-  <p class="muted">공개 사례를 규칙으로 검색합니다. 기일과 조건은 사건 상세의 출처에서 확인하세요.</p>
-  {% if scope == 'winners' %}<p><span class="pill">이긴 매물만 조회</span> <a href="{% url 'auctions:briefing' %}">전체 매물 검색</a></p>{% endif %}
-  <div class="briefing-layout">
-    <details class="panel briefing-history" id="briefing-history" open>
-      <summary>최근 대화</summary>
-      <ul>
-        {% for item in recent %}
-          <li><a href="?scope={{ scope }}&amp;thread={{ item.token }}"{% if item == thread %} aria-current="page"{% endif %}>{{ item.title }}</a></li>
-        {% empty %}<li>최근 대화가 없습니다.</li>{% endfor %}
-      </ul>
-    </details>
-    <section class="panel briefing-thread">
+  <section class="briefing-layout" aria-labelledby="briefing-title">
+    <aside class="briefing-history" aria-labelledby="briefing-history-title">
+      <h2 id="briefing-history-title">최근 대화</h2>
+      {% include 'auctions/_briefing_history.html' %}
+    </aside>
+    <header class="briefing-header">
+      <div class="briefing-title-group">
+        <button type="button" class="briefing-history-trigger" aria-label="최근 대화" aria-haspopup="dialog" aria-controls="briefing-history-drawer" hidden>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+        <h1 id="briefing-title">AI 브리핑</h1>
+        <span class="briefing-scope">{% if scope == 'winners' %}이긴 매물만 조회{% else %}경매 물건 검색·비교{% endif %}</span>
+      </div>
+      <a class="button" href="{% url 'auctions:briefing' %}?scope={{ scope }}">새 대화</a>
+    </header>
+    <section class="briefing-thread" aria-label="대화" data-briefing-thread>
+      <div class="briefing-messages">
+      {% if scope == 'winners' %}<p class="briefing-scope-link"><a href="{% url 'auctions:briefing' %}">전체 매물 검색</a></p>{% endif %}
+      <noscript>
+        <details class="briefing-history-fallback"><summary>최근 대화</summary>{% include 'auctions/_briefing_history.html' %}</details>
+      </noscript>
       {% if not eligible %}
-        <p>경매 VS에서 고유한 매물 5건을 고르면 후보 범위에서 브리핑을 열 수 있어요.</p>
-        <a href="{% url 'auctions:vs' %}">경매 VS에서 계속 선택하기</a>
+        <div class="briefing-welcome">
+          <h2>고른 매물로 브리핑하기</h2>
+          <p class="muted">경매 VS에서 고유한 매물 5건을 고르면 후보 범위에서 브리핑을 열 수 있어요.</p>
+          <a href="{% url 'auctions:vs' %}">경매 VS에서 계속 선택하기</a>
+        </div>
       {% else %}
         {% for message, lots in messages %}
           <article class="briefing-turn">
             <p class="briefing-question">{{ message.question|linebreaksbr }}</p>
-            <p>{{ message.answer }}</p>
-            {% include 'auctions/_briefing_lots.html' %}
+            <div class="briefing-answer">
+              <span class="briefing-avatar" aria-hidden="true">입</span>
+              <div>
+                <p>{{ message.answer }}</p>
+                {% include 'auctions/_briefing_lots.html' %}
+              </div>
+            </div>
           </article>
         {% empty %}
-          <h2>어떤 경매 물건을 찾으세요?</h2>
-          {% if preview %}{% include 'auctions/_briefing_lots.html' with lots=preview %}{% endif %}
-          <div class="briefing-suggestions">
-            <button type="button" data-prompt="인천 아파트 5억 이하 찾아줘">인천 5억 이하 아파트</button>
-            <button type="button" data-prompt="서울 낙찰 사례 보여줘">서울 낙찰 사례</button>
+          <div class="briefing-welcome">
+            <span class="briefing-welcome-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="5.5"/><path d="m15 15 4 4"/></svg></span>
+            <h2>어떤 경매 물건을 찾으세요?</h2>
+            <p class="muted">지역과 예산을 알려주시면 수록 물건을 찾거나 비교할 수 있어요.</p>
+            {% if preview %}{% include 'auctions/_briefing_lots.html' with lots=preview %}{% endif %}
+            <div class="briefing-suggestions">
+              <button type="button" data-prompt="인천 아파트 5억 이하 찾아줘"><strong>예산으로 매물 찾기</strong><span>인천 아파트 5억 이하 찾아줘</span></button>
+              <button type="button" data-prompt="힐탑이루미아파트와 쌍용아파트 비교해줘"><strong>두 물건 비교하기</strong><span>힐탑이루미아파트와 쌍용아파트 비교해줘</span></button>
+              <button type="button" data-prompt="서울 낙찰 사례 보여줘"><strong>낙찰 결과 보기</strong><span>서울 낙찰 사례 보여줘</span></button>
+            </div>
           </div>
         {% endfor %}
+      {% endif %}
+      </div>
+    </section>
+    {% if eligible %}
+      <div class="briefing-composer">
         <form method="post" action="{% url 'auctions:briefing' %}" id="briefing-form">
           {% csrf_token %}
           <input type="hidden" name="scope" value="{{ scope }}">
           {% if thread %}<input type="hidden" name="thread" value="{{ thread.token }}">{% endif %}
           {% for lot in preview %}<input type="hidden" name="lot" value="{{ lot.public_id }}">{% endfor %}
-          <label for="{{ form.question.id_for_label }}">{{ form.question.label }}</label>
-          {{ form.question }}{{ form.question.errors }}
-          <button class="button primary" type="submit">전송</button>
+          <label class="sr-only" for="{{ form.question.id_for_label }}">{{ form.question.label }}</label>
+          {{ form.question }}
+          <button class="button primary" type="submit" aria-label="전송"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5m-5 5 5-5 5 5"/></svg></button>
+          {{ form.question.errors }}
         </form>
-      {% endif %}
-    </section>
-  </div>
+        <p>수록 사례 검색 · 기일과 조건은 사건 상세의 출처에서 확인</p>
+      </div>
+    {% endif %}
+  </section>
+  <dialog id="briefing-history-drawer" class="briefing-history-drawer" aria-labelledby="briefing-drawer-title">
+    <div class="briefing-drawer-content">
+      <div class="section-heading">
+        <h2 id="briefing-drawer-title">최근 대화</h2>
+        <form method="dialog"><button type="submit" aria-label="최근 대화 닫기">×</button></form>
+      </div>
+      {% include 'auctions/_briefing_history.html' %}
+    </div>
+  </dialog>
 {% endblock %}
 {% block scripts %}<script defer src="{% static 'auctions/briefing.js' %}"></script>{% endblock %}

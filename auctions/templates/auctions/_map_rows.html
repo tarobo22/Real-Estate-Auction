@@ -1,12 +1,37 @@
+{% load static %}
 {% for lot in lots %}
   <article class="map-row" data-lot-id="{{ lot.public_id }}">
     <a class="map-lot-link" href="{% url 'auctions:detail' lot.public_id %}{% if return_to %}?return={{ return_to|urlencode:'' }}{% endif %}">
+      <span class="map-row-tags">
+        <span class="pill">{% if lot.is_demo %}시연 매물{% elif lot.bid == None %}입찰 예정{% else %}낙찰 사례{% endif %}</span>
+        {% if lot.failed %}<span class="map-row-failed">유찰 {{ lot.failed }}회</span>{% endif %}
+      </span>
+      <span class="map-row-price">{{ lot.price_label }} <b>{{ lot.display_price }}</b></span>
       <strong>{{ lot.name }}</strong>
-      <span>{{ lot.address }} · {{ lot.use }}</span>
-      <span>{{ lot.price_label }} <b>{{ lot.display_price }}</b></span>
+      <span class="map-row-address">{{ lot.address }}</span>
+      <span class="map-row-address">{{ lot.use }}{% if lot.area != None %} · {{ lot.area|floatformat:"-4" }}㎡{% endif %}{% if lot.floor != None %} · {{ lot.floor }}층{% endif %}</span>
+      {% if lot.advantage %}<span class="map-row-advantage">{{ lot.advantage }}</span>{% endif %}
     </a>
-    {% include 'auctions/_cart_button.html' %}
+    <div class="map-row-photo">
+      {% if lot.demo_photo %}
+        <img src="{% static lot.demo_photo %}" alt="" loading="lazy" decoding="async">
+        <span class="map-row-photo-label">AI 예시 사진</span>
+      {% elif lot.use == '아파트' or lot.use == '오피스텔' %}
+        {% cycle 'auctions/home-example-1.webp' 'auctions/home-example-2.webp' 'auctions/home-example-3.webp' 'auctions/home-example-4.webp' as map_photo silent %}
+        <img src="{% static map_photo %}" alt="" loading="lazy" decoding="async">
+        <span class="map-row-photo-label">예시 사진</span>
+      {% else %}
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10H3zM9 20v-6h6v6"/></svg>
+      {% endif %}
+      {% if lot.latitude != None and lot.longitude != None %}
+        <button type="button" data-map-locate="{{ lot.public_id }}" aria-label="{{ lot.name }} 지도 보기">지도 보기</button>
+      {% endif %}
+    </div>
+    <div class="map-row-footer">
+      <span>{% if lot.sale_date %}{{ lot.sale_date|date:"n월 j일" }} 낙찰{% elif lot.auction_date %}{{ lot.auction_date|date:"n월 j일" }} 매각{% else %}기일 미수록{% endif %}</span>
+      {% include 'auctions/_cart_button.html' %}
+    </div>
   </article>
 {% empty %}
-  <p>조건에 맞는 물건이 없습니다. <a href="{% url 'auctions:map' %}">필터 초기화</a></p>
+  <p class="map-empty">조건에 맞는 물건이 없습니다. <a href="{% url 'auctions:map' %}">필터 초기화</a></p>
 {% endfor %}

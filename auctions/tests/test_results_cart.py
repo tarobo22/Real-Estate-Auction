@@ -52,6 +52,21 @@ class ResultsTests(TestCase):
         lot = response.context["lot"]
         self.assertEqual(list(lot.events.values_list("kind", flat=True)), ["sold"])
 
+    def test_demo_prices_and_photos_stay_labeled_in_home_results_and_detail(self):
+        demo = AuctionLot.objects.create(
+            public_id="test-demo", source_key="demo:auction-lab:test", name="[시연] 확인용 토지",
+            region="인천", use="토지", bid=300_000_000, sale_date=date(2026, 10, 21),
+        )
+        home = self.client.get("/")
+        self.assertContains(home, "AI 예시 사진")
+        self.assertNotContains(home, "실제 낙찰 사례")
+        self.assertContains(self.client.get("/results/", {"status": "sold"}), "시연 낙찰가")
+        detail = self.client.get(f"/lots/{demo.public_id}/")
+        self.assertContains(detail, "시연용 가상 매물")
+        self.assertContains(detail, "demo-land.webp")
+        self.assertNotContains(detail, "법원경매정보 통합 검색")
+        self.assertNotContains(detail, "비교 매매 실거래")
+
 
 class CartTests(TestCase):
     @classmethod

@@ -1,33 +1,44 @@
 {% load static %}
-<section class="section" aria-labelledby="home-{{ rail }}">
-  <div class="section-heading">
+<section class="home-rail-section" aria-labelledby="home-{{ rail }}">
+  <div class="home-section-heading">
     <h2 id="home-{{ rail }}">{{ title }}</h2>
-    <div class="rail-actions">
-      <button type="button" data-rail="{{ rail }}-rail" data-step="-1" aria-label="이전 매물">‹</button>
-      <button type="button" data-rail="{{ rail }}-rail" data-step="1" aria-label="다음 매물">›</button>
-      <a href="{% url 'auctions:map' %}?kind={{ rail }}">더 보기 ›</a>
+    <div class="home-rail-actions">
+      {% if rail == 'upcoming' %}
+        <a class="home-text-link" href="{% url 'auctions:map' %}?kind=upcoming">매물 더 보기 <span aria-hidden="true">›</span></a>
+      {% else %}
+        <a class="home-text-link" href="{% url 'auctions:results' %}?status=sold">낙찰 더 보기 <span aria-hidden="true">›</span></a>
+      {% endif %}
+      <div class="home-rail-controls" role="group" aria-label="{{ title }} 이동" hidden>
+        <button class="home-rail-button" type="button" data-step="-1" aria-controls="{{ rail }}-rail" aria-label="이전 매물" disabled><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m12 5-5 5 5 5"/></svg></button>
+        <button class="home-rail-button" type="button" data-step="1" aria-controls="{{ rail }}-rail" aria-label="다음 매물" disabled><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m8 5 5 5-5 5"/></svg></button>
+      </div>
     </div>
   </div>
-  <div class="rail" id="{{ rail }}-rail" tabindex="0" aria-label="{{ title }} 목록">
+  <div class="home-lot-grid" id="{{ rail }}-rail" data-home-rail tabindex="0" aria-label="{{ title }} 목록">
     {% for lot, photo in lots %}
       <a class="home-lot" href="{% url 'auctions:detail' lot.public_id %}">
         <div class="home-lot-media">
-          {% with image=lot.demo_photo|default:photo %}
-            <img src="{% static image %}" alt="" loading="lazy" decoding="async">
-          {% endwith %}
+          {% with image=lot.demo_photo|default:photo %}<img class="home-lot-photo" src="{% static image %}" alt="" loading="lazy" decoding="async">{% endwith %}
           <span>{% if lot.is_demo %}AI 예시 사진{% else %}예시 사진{% endif %}</span>
         </div>
         <div class="home-lot-content">
-          <p class="lot-meta"><span class="pill">{% if rail == 'upcoming' %}입찰 예정{% else %}낙찰 사례{% endif %}</span> {{ lot.region }} {{ lot.district }}</p>
+          <div class="home-lot-meta"><span class="pill">{% if lot.is_demo %}시연 매물{% elif rail == 'upcoming' %}입찰 예정{% else %}낙찰 사례{% endif %}</span><span>{{ lot.region }} {{ lot.district }}</span></div>
           <h3>{{ lot.name }}</h3>
-          <p>{{ lot.price_label }} <strong>{{ lot.display_price }}</strong></p>
-          <p>{{ lot.use }}{% if lot.area %} · {% if lot.is_demo and lot.use == '토지' %}토지 면적{% else %}전용{% endif %} {{ lot.area|floatformat:"-4" }}㎡{% endif %}{% if rail == 'upcoming' and lot.failed != None %} · 유찰 {{ lot.failed }}회{% endif %}</p>
-          <p>{% if rail == 'upcoming' %}매각기일 {{ lot.auction_date|date:"n월 j일" }}{% else %}낙찰 {{ lot.sale_date|date:"n월 j일" }}{% endif %}</p>
+          <p class="home-lot-price"><span>{{ lot.price_label }}</span><strong class="home-price">{{ lot.display_price }}</strong></p>
+          <p class="home-lot-specs">{{ lot.use }}{% if lot.area != None %} · {% if lot.use == '토지' %}토지면적{% elif lot.use == '상가' %}전유{% else %}전용{% endif %} {{ lot.area|floatformat:"-4" }}㎡{% endif %}{% if rail == 'upcoming' and lot.failed != None %} · 유찰 {{ lot.failed }}회{% elif rail == 'sold' and lot.appraisal != None %} · 감정가 {{ lot.display_appraisal }}{% endif %}</p>
+          <div class="home-lot-footer">
+            {% if rail == 'upcoming' %}
+              <span>매각기일 <time datetime="{{ lot.auction_date|date:'Y-m-d' }}">{{ lot.auction_date|date:"n월 j일" }}</time></span>
+              <span class="home-lot-cta">매물 보기 <span aria-hidden="true">›</span></span>
+            {% else %}
+              <span>낙찰 {% if lot.sale_date %}<time datetime="{{ lot.sale_date|date:'Y-m-d' }}">{{ lot.sale_date|date:"n월 j일" }}</time>{% else %}일자 미수록{% endif %}</span>
+            {% endif %}
+          </div>
         </div>
       </a>
     {% empty %}
       <p>표시할 공개 사례가 없습니다.</p>
     {% endfor %}
   </div>
-  {% if rail == 'upcoming' %}<p class="muted">{{ snapshot|date:"Y.m.d" }} 확인 · 기일과 가격은 법원 원문에서 확인하세요.</p>{% endif %}
+  {% if rail == 'upcoming' %}<p class="home-data-note">{{ snapshot|date:"Y.m.d" }} 확인 · 기일과 가격은 법원 원문에서 확인하세요.</p>{% endif %}
 </section>

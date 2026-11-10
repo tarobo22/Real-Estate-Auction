@@ -1,37 +1,66 @@
 {% extends 'auctions/base.html' %}
+{% load static %}
 {% block title %}경매 홈 · 입찰랩{% endblock %}
-{% block content %}
-  <section class="hero">
-    <p class="eyebrow">수도권 법원경매</p>
-    <h1>어떤 경매 물건을 찾으세요?</h1>
-    <form class="filter-grid" id="home-search" method="get" action="{% url 'auctions:map' %}">
-      {% include 'auctions/_search_fields.html' %}
-      <button class="button primary" type="submit">지도에서 보기</button>
-    </form>
-  </section>
-  <section class="section">
-    <h2>용도별 매물</h2>
-    <div class="categories">
-      {% for category in categories %}
-        <a href="{% url 'auctions:map' %}?use={{ category.use|urlencode }}&amp;kind={{ category.kind }}">
-          {{ category.use }} <small>{% if category.kind == 'upcoming' %}입찰 예정{% else %}낙찰 사례{% endif %} {{ category.count }}건</small>
-        </a>
-      {% endfor %}
-    </div>
-  </section>
-  <section class="section">
-    <div class="section-heading"><h2>경매 VS</h2><a href="{% url 'auctions:vs' %}">비교 화면 ›</a></div>
-    {% include 'auctions/_vs_pair.html' %}
-  </section>
-  <section class="section panel briefing-banner">
-    <h2>말로 경매 매물 찾기</h2>
-    <p>지역과 예산을 입력해 수록 물건을 검색하거나 비교해 보세요.</p>
-    <a class="button primary" href="{% url 'auctions:briefing' %}">AI 브리핑 시작</a>
-  </section>
-  {% include 'auctions/_home_rail.html' with title='다가오는 입찰' rail='upcoming' lots=upcoming %}
-  {% include 'auctions/_home_rail.html' with title='실제 낙찰 사례' rail='sold' lots=sold %}
+{% block page_styles %}
+  <link rel="stylesheet" href="{% static 'auctions/home.css' %}">
+  <link rel="stylesheet" href="{% static 'auctions/comparison.css' %}">
 {% endblock %}
-{% block scripts %}{% load static %}
+{% block content %}
+  <div class="home-page">
+    <div class="home-hero">
+      <div class="home-shell">
+        <section class="home-search-section" aria-labelledby="home-title">
+          <h1 id="home-title" class="sr-only">수도권 법원경매</h1>
+          <form class="home-search" id="home-search" method="get" action="{% url 'auctions:map' %}">
+            <div class="home-search-main">
+              <label class="home-keyword">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="5.5"/><path d="m15 15 4 4"/></svg>
+                <span class="sr-only">검색어</span>
+                {{ filter.q }}
+              </label>
+              <button class="button primary" type="submit">지도에서 보기</button>
+            </div>
+            <label><span>지역</span>{{ filter.region }}</label>
+            <label><span>용도</span>{{ filter.use }}</label>
+            <label><span>예산</span>{{ filter.budget }}</label>
+          </form>
+        </section>
+
+        <div class="home-discovery">
+          <section class="home-categories" aria-labelledby="home-categories">
+            <h2 id="home-categories" class="sr-only">용도별 매물</h2>
+            <div class="home-category-grid">
+              {% for category in categories %}
+                <a class="home-category" href="{% url 'auctions:map' %}?use={{ category.use|urlencode }}&amp;kind={{ category.kind }}">
+                  {% include 'auctions/_home_category_icon.html' with use=category.use only %}
+                  <span class="home-category-copy"><span>{{ category.use }}</span><small>{% if category.kind == 'upcoming' %}입찰 예정{% else %}낙찰 사례{% endif %} {{ category.count }}건</small></span>
+                </a>
+              {% endfor %}
+            </div>
+          </section>
+
+          <div class="home-promos">
+            <section class="home-vs-section" aria-labelledby="home-vs">
+              <div class="home-section-heading"><h2 id="home-vs">경매 VS</h2><a class="home-text-link" href="{% url 'auctions:vs' %}">비교 화면 <span aria-hidden="true">›</span></a></div>
+              {% if current_round %}<p class="home-vs-status">카드를 눌러 선택</p>{% endif %}
+              {% include 'auctions/_vs_pair.html' %}
+            </section>
+            <a class="home-ai-promo" href="{% url 'auctions:briefing' %}">
+              <span class="home-ai-promo-copy"><span>AI 브리핑</span><strong>채팅으로 매물 찾기</strong></span>
+              <span class="home-ai-promo-link">대화 시작 <span aria-hidden="true">›</span></span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="home-shell home-feed">
+      {% include 'auctions/_home_rail.html' with title='다가오는 입찰' rail='upcoming' lots=upcoming %}
+      {% include 'auctions/_home_rail.html' with title=sold_title rail='sold' lots=sold %}
+    </div>
+  </div>
+{% endblock %}
+{% block scripts %}
   <script defer src="{% static 'auctions/home.js' %}"></script>
   <script defer src="{% static 'auctions/comparison.js' %}"></script>
 {% endblock %}

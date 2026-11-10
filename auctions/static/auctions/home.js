@@ -4,34 +4,50 @@
     event.preventDefault();
     const url = new URL(form.action);
     for (const [key, value] of new FormData(form)) {
-      if (value.trim()) url.searchParams.set(key, value.trim());
+      const trimmed = value.trim();
+      if (trimmed) url.searchParams.set(key, trimmed);
     }
     location.assign(url);
   });
 
-  const rails = Array.from(document.querySelectorAll(".rail"));
-  function move(rail, direction) {
-    const card = rail.querySelector(".home-lot");
-    const end = rail.scrollWidth - rail.clientWidth;
-    if (!card || end < 2) return;
-    const step = card.offsetWidth + Number.parseFloat(getComputedStyle(rail).gap);
-    const target = direction < 0 && rail.scrollLeft < 2 ? end
-      : direction > 0 && rail.scrollLeft >= end - 2 ? 0 : rail.scrollLeft + direction * step;
-    rail.scrollTo({ left: target, behavior: "smooth" });
-  }
+  const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  for (const rail of document.querySelectorAll("[data-home-rail]")) {
+    const controls = rail.previousElementSibling.querySelector(".home-rail-controls");
+    const buttons = controls.querySelectorAll("button");
+    const update = () => {
+      const canScroll = rail.scrollWidth - rail.clientWidth > 1;
+      controls.hidden = !canScroll;
+      for (const button of buttons) button.disabled = !canScroll;
+    };
 
-  for (const rail of rails) {
-    const buttons = Array.from(document.querySelectorAll("[data-rail]"))
-      .filter((button) => button.dataset.rail === rail.id);
-    function update() {
-      for (const button of buttons) button.hidden = rail.scrollWidth <= rail.clientWidth + 2;
+    function move(direction) {
+      const limit = rail.scrollWidth - rail.clientWidth;
+      const first = rail.firstElementChild;
+      const second = first?.nextElementSibling;
+      if (!second || limit <= 1) return;
+
+      const step = second.getBoundingClientRect().left - first.getBoundingClientRect().left;
+      const position = rail.scrollLeft;
+      // Move the offscreen card before scrolling so the next full row stays filled.
+      if (direction > 0 && position >= limit - 1) {
+        rail.append(first);
+        rail.scrollTo({ left: position - step, behavior: "instant" });
+      } else if (direction < 0 && position <= 1) {
+        rail.prepend(rail.lastElementChild);
+        rail.scrollTo({ left: position + step, behavior: "instant" });
+      }
+      rail.scrollBy({ left: step * direction, behavior: motion.matches ? "instant" : "smooth" });
     }
-    for (const button of buttons) button.addEventListener("click", () => move(rail, Number(button.dataset.step)));
+
+    for (const button of buttons) {
+      button.addEventListener("click", () => move(Number(button.dataset.step)));
+    }
     rail.addEventListener("keydown", (event) => {
-      if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+      if (event.target !== rail || !["ArrowLeft", "ArrowRight"].includes(event.key)) return;
       event.preventDefault();
-      move(rail, event.key === "ArrowLeft" ? -1 : 1);
+      move(event.key === "ArrowLeft" ? -1 : 1);
     });
     new ResizeObserver(update).observe(rail);
+    update();
   }
 })();

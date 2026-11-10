@@ -1,12 +1,19 @@
 {% extends 'auctions/base.html' %}
 {% load static %}
 {% block title %}경매 VS · 입찰랩{% endblock %}
+{% block page_styles %}<link rel="stylesheet" href="{% static 'auctions/comparison.css' %}">{% endblock %}
 {% block content %}
-  <div class="section-heading">
-    <h1>경매 VS</h1>
+  <section class="versus-page" aria-labelledby="versus-title">
+  <header class="versus-header">
+    <div>
+      <h1 id="versus-title">경매 VS</h1>
+      <p class="muted">한 건을 고르면 다음 조합이 나와요.</p>
+    </div>
     <a href="{% url 'auctions:inquiry' %}" class="button" data-open-inquiry aria-haspopup="dialog">바로 문의하기</a>
-  </div>
-  <p class="muted">같은 상태의 두 물건을 보고, 먼저 검토할 물건을 골라 보세요.</p>
+  </header>
+  {% if current_round %}
+    <p class="versus-caption muted">{% if current_round.first.bid != None %}낙찰 사례{% else %}입찰 예정 매물{% endif %}</p>
+  {% endif %}
   {% include 'auctions/_vs_pair.html' %}
   {% include 'auctions/_recommendation.html' %}
   <dialog class="detail-dialog" id="auction-inquiry" aria-labelledby="auction-inquiry-title">
@@ -35,6 +42,7 @@
         <p>비교에서 고른 물건이 여기에 쌓입니다.</p>
       {% endfor %}
     </div>
+  </section>
   </section>
 {% endblock %}
 {% block scripts %}

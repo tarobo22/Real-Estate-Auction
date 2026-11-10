@@ -1,7 +1,7 @@
 from django.urls import path
 from django.views.generic import RedirectView, TemplateView
 
-from . import cart, results, views
+from . import cart, comparison, results, views
 
 
 app_name = "auctions"
@@ -13,5 +13,6 @@ urlpatterns = [
     path("lots/<slug:public_id>/", views.lot_detail, name="detail"),
     path("results/", results.results, name="results"),
     path("cart/", cart.cart, name="cart"),
+    path("vs/", comparison.versus, name="vs"),
     path("location-data-report.html", TemplateView.as_view(template_name="auctions/location-data-report.html"), name="location-report"),
 ]

@@ -1,0 +1,33 @@
+{% extends 'auctions/base.html' %}
+{% load static %}
+{% block title %}경매 VS · 입찰랩{% endblock %}
+{% block content %}
+  <div class="section-heading"><h1>경매 VS</h1>{% block vs_actions %}{% endblock %}</div>
+  <p class="muted">같은 상태의 두 물건을 보고, 먼저 검토할 물건을 골라 보세요.</p>
+  {% include 'auctions/_vs_pair.html' %}
+  {% block recommendation %}{% endblock %}
+  <section class="section" aria-labelledby="winner-history">
+    <div class="section-heading">
+      <h2 id="winner-history" tabindex="-1">이긴 매물 <span class="pill">고유 {{ unique_count }}건</span></h2>
+      {% if history %}
+        <form method="post" action="{% url 'auctions:vs' %}">{% csrf_token %}<button name="action" value="reset">전체 초기화</button></form>
+      {% endif %}
+    </div>
+    <div class="winner-rail">
+      {% for record in history %}
+        <article class="panel winner-card">
+          <a href="{% url 'auctions:detail' record.winner.public_id %}">{{ record.winner.name }}</a>
+          <span>{{ record.winner.price_label }} {{ record.winner.display_price }}</span>
+          <form method="post" action="{% url 'auctions:vs' %}">
+            {% csrf_token %}
+            <input type="hidden" name="token" value="{{ record.token }}">
+            <button name="action" value="remove">기록 삭제</button>
+          </form>
+        </article>
+      {% empty %}
+        <p>비교에서 고른 물건이 여기에 쌓입니다.</p>
+      {% endfor %}
+    </div>
+  </section>
+{% endblock %}
+{% block scripts %}<script defer src="{% static 'auctions/comparison.js' %}"></script>{% endblock %}

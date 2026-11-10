@@ -142,6 +142,16 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .cart-list { list-style: none; padding: 0; }
 .cart-list li { display: flex; justify-content: space-between; align-items: center; gap: .5rem; border-block-start: 1px solid var(--line); padding: .7rem 0; }
 .cart-list li a { display: grid; text-decoration: none; }
+.vs-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .65rem; }
+.vs-card { padding: clamp(.45rem, 2vw, 1rem); min-width: 0; }
+.vs-pick { display: grid; justify-items: start; gap: .3rem; width: 100%; min-height: 130px; text-align: start; }
+.vs-pick strong { font-size: 1.2rem; }
+.vs-pick b { color: var(--green); font-size: clamp(1rem, 2.4vw, 1.5rem); }
+.vs-pick-label { color: var(--green); }
+.vs-pick.is-selected { background: var(--tint); border-color: var(--green); opacity: 1; }
+.vs-card-actions { display: flex; flex-wrap: wrap; gap: .35rem .8rem; margin-block-start: .45rem; font-size: .9rem; }
+.winner-rail { display: flex; overflow-x: auto; gap: .55rem; padding: .3rem; scroll-snap-type: x mandatory; }
+.winner-card { display: grid; gap: .3rem; flex: 0 0 200px; padding: .75rem; scroll-snap-align: start; }
 @media (max-width: 720px) {
   .site-header { position: sticky; top: 0; z-index: 3; }
   .header-row { min-height: 54px; }

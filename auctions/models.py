@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from django.contrib.gis.db import models
 from django.contrib.postgres.indexes import GistIndex
 from django.db.models import F, Func, Q, Value
@@ -170,3 +172,23 @@ class CartItem(models.Model):
 
     class Meta:
         constraints = [models.UniqueConstraint(fields=["session", "lot"], name="auction_unique_cart_lot")]
+
+
+class ComparisonRound(models.Model):
+    session = models.ForeignKey("sessions.Session", on_delete=models.CASCADE)
+    token = models.UUIDField(default=uuid4, unique=True, editable=False)
+    first = models.ForeignKey(AuctionLot, on_delete=models.CASCADE, related_name="+")
+    second = models.ForeignKey(AuctionLot, on_delete=models.CASCADE, related_name="+")
+    winner = models.ForeignKey(AuctionLot, null=True, on_delete=models.CASCADE, related_name="+")
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["session"], condition=Q(winner__isnull=True), name="auction_one_open_round",
+            ),
+            models.CheckConstraint(condition=~Q(first=F("second")), name="auction_round_distinct_lots"),
+            models.CheckConstraint(
+                condition=Q(winner__isnull=True) | Q(winner=F("first")) | Q(winner=F("second")),
+                name="auction_winner_belongs_to_round",
+            ),
+        ]

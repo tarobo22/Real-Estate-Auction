@@ -17,8 +17,15 @@
       {% endfor %}
     </div>
   </section>
+  <section class="section">
+    <div class="section-heading"><h2>경매 VS</h2><a href="{% url 'auctions:vs' %}">비교 화면 ›</a></div>
+    {% include 'auctions/_vs_pair.html' %}
+  </section>
   {% block home_tools %}{% endblock %}
   {% include 'auctions/_home_rail.html' with title='다가오는 입찰' rail='upcoming' lots=upcoming %}
   {% include 'auctions/_home_rail.html' with title='실제 낙찰 사례' rail='sold' lots=sold %}
 {% endblock %}
-{% block scripts %}{% load static %}<script defer src="{% static 'auctions/home.js' %}"></script>{% endblock %}
+{% block scripts %}{% load static %}
+  <script defer src="{% static 'auctions/home.js' %}"></script>
+  <script defer src="{% static 'auctions/comparison.js' %}"></script>
+{% endblock %}

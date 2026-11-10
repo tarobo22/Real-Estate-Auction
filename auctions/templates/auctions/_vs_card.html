@@ -1,0 +1,19 @@
+<article class="panel vs-card">
+  <form action="{% url 'auctions:vs' %}" method="post" data-vs-choose>
+    {% csrf_token %}
+    <input type="hidden" name="action" value="choose">
+    <input type="hidden" name="token" value="{{ current_round.token }}">
+    <button type="submit" name="winner" value="{{ lot.public_id }}" data-vs-slot="{{ slot }}" class="vs-pick">
+      <span class="pill">{{ slot }} · {% if lot.bid != None %}낙찰 사례{% else %}입찰 예정{% endif %}</span>
+      <strong>{{ lot.name }}</strong>
+      <span>{{ lot.address }} · {{ lot.use }}</span>
+      <span>{{ lot.price_label }} <b>{{ lot.display_price }}</b></span>
+      {% if lot.advantage %}<span>{{ lot.advantage }}</span>{% endif %}
+      <span class="vs-pick-label">{{ slot }} 선택하기</span>
+    </button>
+  </form>
+  <div class="vs-card-actions">
+    <a href="{% url 'auctions:detail' lot.public_id %}" data-vs-detail>상세 보기</a>
+    <a href="{% url 'auctions:detail' lot.public_id %}">매물 보기 ›</a>
+  </div>
+</article>

@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_safe
 
+from .comparison import current_comparison
 from .forms import BoundsForm, LotFilter
 from .models import AuctionLot, LotUse
 from .queries import COURT_SEARCH, MAP_LIMIT, SNAPSHOT_DATE, map_lots, page_lots
@@ -34,10 +35,12 @@ def home(request):
     upcoming = list(map_lots({"kind": "upcoming"})[:8])
     sold = list(map_lots({"kind": "sold"})[:8])
     photos = [f"auctions/home-example-{index}.webp" for index in range(1, 5)]
+    round_, single = current_comparison(request)
     return render(request, "auctions/home.html", {
         "filter": LotFilter(), "uses": LotUse.values,
         "upcoming": zip(upcoming, photos * 2), "sold": zip(sold, photos[2:] + photos * 2),
         "snapshot": SNAPSHOT_DATE, "active": "home",
+        "current_round": round_, "single_lot": single,
     })
 
 

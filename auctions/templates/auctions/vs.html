@@ -2,10 +2,17 @@
 {% load static %}
 {% block title %}경매 VS · 입찰랩{% endblock %}
 {% block content %}
-  <div class="section-heading"><h1>경매 VS</h1>{% block vs_actions %}{% endblock %}</div>
+  <div class="section-heading">
+    <h1>경매 VS</h1>
+    <a href="{% url 'auctions:inquiry' %}" class="button" data-open-inquiry aria-haspopup="dialog">바로 문의하기</a>
+  </div>
   <p class="muted">같은 상태의 두 물건을 보고, 먼저 검토할 물건을 골라 보세요.</p>
   {% include 'auctions/_vs_pair.html' %}
   {% include 'auctions/_recommendation.html' %}
+  <dialog class="detail-dialog" id="auction-inquiry" aria-labelledby="auction-inquiry-title">
+    <div class="section-heading"><h2 id="auction-inquiry-title">경매 매물 문의</h2><form method="dialog"><button>닫기</button></form></div>
+    {% include 'auctions/_inquiry_fields.html' %}
+  </dialog>
   <section class="section" aria-labelledby="winner-history">
     <div class="section-heading">
       <h2 id="winner-history" tabindex="-1">이긴 매물 <span class="pill">고유 {{ unique_count }}건</span></h2>
@@ -30,4 +37,7 @@
     </div>
   </section>
 {% endblock %}
-{% block scripts %}<script defer src="{% static 'auctions/comparison.js' %}"></script>{% endblock %}
+{% block scripts %}
+  <script defer src="{% static 'auctions/comparison.js' %}"></script>
+  <script defer src="{% static 'auctions/inquiry.js' %}"></script>
+{% endblock %}

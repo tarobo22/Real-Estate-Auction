@@ -1,0 +1,11 @@
+{% extends 'auctions/base.html' %}
+{% load static %}
+{% block title %}경매 매물 문의 · 입찰랩{% endblock %}
+{% block content %}
+  <p><a href="{% url 'auctions:vs' %}">‹ 경매 VS로 돌아가기</a></p>
+  <section class="panel detail-page">
+    <h1>경매 매물 문의</h1>
+    {% include 'auctions/_inquiry_fields.html' %}
+  </section>
+{% endblock %}
+{% block scripts %}<script defer src="{% static 'auctions/inquiry.js' %}"></script>{% endblock %}

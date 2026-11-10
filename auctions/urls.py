@@ -14,6 +14,7 @@ urlpatterns = [
     path("results/", results.results, name="results"),
     path("cart/", cart.cart, name="cart"),
     path("vs/", comparison.versus, name="vs"),
+    path("vs/inquiry/", comparison.inquiry, name="inquiry"),
     path("briefing/", briefing.briefing, name="briefing"),
     path("location-data-report.html", TemplateView.as_view(template_name="auctions/location-data-report.html"), name="location-report"),
 ]

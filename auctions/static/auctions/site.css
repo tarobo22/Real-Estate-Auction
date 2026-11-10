@@ -165,6 +165,8 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .briefing-suggestions { display: flex; flex-wrap: wrap; gap: .4rem; }
 #briefing-form { display: grid; gap: .4rem; margin-block-start: .8rem; }
 #briefing-form button { justify-self: end; }
+[data-inquiry-fields] { display: grid; gap: .4rem; }
+[data-inquiry-fields] button { justify-self: end; }
 @media (max-width: 720px) {
   .site-header { position: sticky; top: 0; z-index: 3; }
   .header-row { min-height: 54px; }

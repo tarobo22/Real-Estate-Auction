@@ -8,8 +8,9 @@ from django.db import transaction
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import redirect, render
 from django.urls import reverse
-from django.views.decorators.http import require_http_methods
+from django.views.decorators.http import require_http_methods, require_safe
 
+from .inquiry import inquiry_draft
 from .models import AuctionLot, ComparisonRound
 from .queries import SNAPSHOT_DATE
 from .sessions import browser_session, lock_browser_session
@@ -138,4 +139,15 @@ def versus(request):
     return render(request, "auctions/vs.html", {
         "current_round": round_, "single_lot": single, "history": history,
         "unique_count": len(winners), "active": "vs", "recommended": primary, "sold_reference": sold,
+        "draft": inquiry_draft(history[0].winner if history else None, round_),
+    })
+
+
+@require_safe
+def inquiry(request):
+    session = browser_session(request)
+    last = round_history(session).select_related("winner").order_by("-pk").first() if session else None
+    round_ = None if last else current_comparison(request)[0]
+    return render(request, "auctions/inquiry.html", {
+        "active": "vs", "draft": inquiry_draft(last.winner if last else None, round_),
     })

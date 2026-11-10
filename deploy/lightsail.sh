@@ -18,6 +18,7 @@ git fetch origin refs/heads/main
 [[ $(git rev-parse FETCH_HEAD) == "$commit" ]] || { echo 'A newer main commit exists.' >&2; exit 1; }
 [[ -z $(git ls-tree "$commit" -- .env) ]] || { echo 'The release tracks .env.' >&2; exit 1; }
 git merge --ff-only "$commit"
+[[ $(git rev-parse HEAD) == "$commit" ]] || { echo 'The checkout does not match the verified commit.' >&2; exit 1; }
 
 docker compose build web
 docker compose up -d --wait db

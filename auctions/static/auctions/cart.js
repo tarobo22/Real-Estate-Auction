@@ -21,7 +21,7 @@
     button.disabled = true;
     pending = pending.then(async () => {
       try {
-        const response = await fetch(form.action, { method: "POST", body: data, headers: { Accept: "application/json" } });
+        const response = await fetch(form.getAttribute("action"), { method: "POST", body: data, headers: { Accept: "application/json" } });
         if (!response.ok) throw new Error("cart");
         const result = await response.json();
         const active = document.activeElement;
